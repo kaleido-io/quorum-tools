@@ -1,6 +1,6 @@
 SHELL := /bin/bash
 
-.PHONY: all docker clean
+.PHONY: docker clean
 
 DOCKER_NS = jpmorganchase
 IMAGES = quorum-builder quorum constellation
@@ -8,8 +8,7 @@ GOBIN = $(shell pwd)/../quorum/build/bin
 GO ?= latest
 
 # base constellation image takes a long time to build, only build when necessary
-LATEST = $(shell docker images jpmorganchase/constellation  | awk '{ print $$2 }' | grep latest)
-EXISTS = $(findstring "latest", $(LATEST))
+CONSTELLATION_BASE = $(shell docker images $(DOCKER_NS)/constellation-base | awk '{ print $$2 }' | grep latest)
 
 %-docker-clean:
 	$(eval TARGET = ${patsubst %-docker-clean,%,${@}})
@@ -32,19 +31,22 @@ docker-geth: docker-builder
 	# build the "quorum" docker image
 	docker build -t $(DOCKER_NS)/quorum -f geth/Dockerfile ..
 
-LATEST = $(shell docker images $(DOCKER_NS)/constellation | awk '{ print $$2 }' | grep latest)
+docker-constellation-base: docker-builder
+	@echo "Building docker image for constellation base"
+	docker build -t $(DOCKER_NS)/constellation-base -f ../constellation/build-ubuntu.dockerfile --build-arg DISTRO_VERSION=16.04 ../constellation
+
 docker-constellation: docker-builder
 	@echo "Building docker image for constellation"
 	# build the "constellation" docker image
-ifneq ($(LATEST),latest)
+ifneq ($(CONSTELLATION_BASE),latest)
 	@echo "Building docker image for constellation base"
-	docker build -t $(DOCKER_NS)/constellation -f ../constellation/build-ubuntu.dockerfile --build-arg DISTRO_VERSION=16.04 ../constellation
+	docker build -t $(DOCKER_NS)/constellation-base -f ../constellation/build-ubuntu.dockerfile --build-arg DISTRO_VERSION=16.04 ../constellation
 else
 	@echo "Docker image for constellation base already exists"
 endif
 
 	# build the "constellation" docker image
 	@echo "Building docker image for constellation-test"
-	docker build -t $(DOCKER_NS)/constellation-test -f constellation/Dockerfile .
+	docker build -t $(DOCKER_NS)/constellation -f constellation/Dockerfile .
 
 docker: docker-geth docker-constellation

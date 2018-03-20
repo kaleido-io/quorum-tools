@@ -59,7 +59,7 @@ do
 done
 
 # Docker image name
-image_constellation=jpmorganchase/constellation-test
+image_constellation=jpmorganchase/constellation
 image_quorum=jpmorganchase/quorum
 
 ########################################################################

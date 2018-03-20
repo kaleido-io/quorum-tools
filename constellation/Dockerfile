@@ -1,4 +1,4 @@
-FROM jpmorganchase/constellation:latest
+FROM jpmorganchase/constellation-base:latest
 
 COPY \
         ./constellation/start.sh \
