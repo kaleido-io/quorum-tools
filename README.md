@@ -1,6 +1,6 @@
-# Testing dockerized geth and constellation
+# Build and Test Quorum and Constellation with Docker
 
-This tests the setup to have geth (based on go-ethereum) and constellation run in separate docker instances, but in pairs such that each geth docker instance communicates with its corresponding constellation node docker instance via IPC instead of TCP.
+This tests the setup to have Quorum (based on go-ethereum) and Constellation to be built in docker and run in separate docker instances, but in pairs such that each geth docker instance communicates with its corresponding constellation node docker instance via IPC instead of TCP.
 
 ## Pre-requisite
 
