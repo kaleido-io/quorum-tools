@@ -44,6 +44,17 @@ done
 echo "Consensus:        $CONSENSUS"
 echo "Number of Nodes:  $NUMNODES"
 
+mkdir tmp-ibft
+cd tmp-ibft
+pwd=`pwd`
+
+if [[ "$CONSENSUS" == "ibft" ]]
+then
+  cp ../../istanbul/scripts/run.sh ./
+  echo "Generating an IBFT network with $NUMNODES nodes"
+  bash -c "docker run -it -v $pwd:/ibft istanbul-tools sh -c /ibft/run.sh --nodes $NUMNODES"
+fi
+
 #### Configuration options #############################################
 
 # One Docker container will be configured for each IP address in $ips
@@ -62,18 +73,13 @@ done
 image_constellation=jpmorganchase/constellation
 image_quorum=jpmorganchase/quorum
 
-########################################################################
-
-if [[ $NUMNODES < 2 ]]
-then
-    echo "ERROR: There must be more than one node IP address."
-    exit 1
-fi
-
-rm -rf tmp/
+cd ../
+rm -rf tmp
 mkdir tmp
 cd tmp
 pwd=`pwd`
+
+########################################################################
 
 #### Create directory for bootnode's configuration ##################
 echo '[0] Configuring for bootnode'
@@ -85,52 +91,48 @@ bootnode_enode=`$bootnode_cmd -nodekey /qdata/nodekey -writeaddress | tr -d '[:s
 echo "bootnode id: $bootnode_enode"
 
 
-#### Create directories for each node's configuration ##################
+#### Make static-nodes.json and store keys #############################
 
-echo '[1] Configuring for '$NUMNODES' nodes.'
+echo '[1] Creating Enodes and static-nodes.json.'
+
+echo "[" > static-nodes.json
 
 for i in $(seq 1 $NUMNODES)
 do
-    qd=qdata_$i
-    mkdir -p $qd/{logs,constellation}
-    mkdir -p $qd/ethereum/geth
-done
+  k=$((i-1))
+  qd=qdata_$i
+  ip=${ips[$k]}
+  mkdir -p $qd/{logs,constellation}
+  mkdir -p $qd/ethereum/geth
 
+  bootnode_cmd="docker run -it -v $pwd/$qd:/qdata $image_quorum /usr/local/bin/bootnode"
 
-#### Make static-nodes.json and store keys #############################
-
-echo '[2] Creating Enodes and static-nodes.json.'
-
-echo "[" > static-nodes.json
-n=1
-for ip in ${ips[*]}
-do
-    qd=qdata_$n
-
-    # Generate the node's Enode and key
-    bootnode_cmd="docker run -it -v $pwd/$qd:/qdata $image_quorum /usr/local/bin/bootnode"
+  if [[ "$CONSENSUS" == "ibft" ]]
+  then
+    # for IBFT, all key materials have already been generated in the previous step
+    # just copy them over
+    cp ../tmp-ibft/$k/nodekey $qd/ethereum/
+  else
+    # for Raft, generate from scratch
     $bootnode_cmd -genkey /qdata/ethereum/nodekey
-    enode=`$bootnode_cmd -nodekey /qdata/ethereum/nodekey -writeaddress | tr -d '[:space:]'`
-    echo "Node $n id: $enode"
+  fi
 
-    # Add the enode to static-nodes.json
-    sep=`[[ $n < $NUMNODES ]] && echo ","`
-    echo '  "enode://'$enode'@'$ip':30303?discport=0&raftport=50400"'$sep >> static-nodes.json
+  enode=`$bootnode_cmd -nodekey /qdata/ethereum/nodekey -writeaddress | tr -d '[:space:]'`
+  echo "  Node $i id: $enode"
 
-    let n++
+  # Add the enode to static-nodes.json
+  sep=`[[ $i < $NUMNODES ]] && echo ","`
+  echo '  "enode://'$enode'@'$ip':30303?discport=0&raftport=50400"'$sep >> static-nodes.json
+
 done
-echo "]" >> static-nodes.json
 
+echo "]" >> static-nodes.json
 
 #### Create accounts, keys and genesis.json file #######################
 
-echo '[3] Creating Ether accounts and genesis.json.'
+echo '[2] Creating Ether accounts and genesis.json.'
 
-cat > genesis.json <<EOF
-{
-  "alloc": {
-EOF
-
+# generate the allocated accounts section to be used in both Raft and IBFT
 for i in $(seq 1 $NUMNODES)
 do
     qd=qdata_$i
@@ -139,35 +141,46 @@ do
     touch $qd/ethereum/passwords.txt
     create_account="docker run -v $pwd/$qd:/qdata $image_quorum /usr/local/bin/geth --datadir=/qdata/ethereum --password /qdata/ethereum/passwords.txt account new"
     account1=`$create_account | cut -c 11-50`
-    echo "Accounts for node $i: $account1"
+    echo "  Accounts for node $i: $account1"
 
     # Add the account to the genesis block so it has some Ether at start-up
     sep=`[[ $i < $NUMNODES ]] && echo ","`
-    cat >> genesis.json <<EOF
-    "${account1}": {
-      "balance": "1000000000000000000000000000"
-    }${sep}
+    cat >> alloc.json <<EOF
+    "${account1}": { "balance": "1000000000000000000000000000" }${sep}
 EOF
-
-    let n++
 done
 
-cat >> genesis.json <<EOF
+if [[ "$CONSENSUS" == "ibft" ]]
+then
+  # for IBFT, all key materials have already been generated in the previous step
+  # just copy them over
+  # replace the alloc section
+  ALLOC=`cat alloc.json`
+  cat ../tmp-ibft/genesis.json | jq ". | .alloc = {$ALLOC}" > genesis.json
+else
+  # for Raft, generate from scratch
+  cat > genesis.json <<EOF
+{
+  "alloc": {
+EOF
+
+  cat alloc.json >> genesis.json
+
+  cat >> genesis.json <<EOF
   },
   "coinbase": "0x0000000000000000000000000000000000000000",
   "config": {
     "homesteadBlock": 0
   },
   "difficulty": "0x0",
-  "extraData": "0x",
-  "gasLimit": "0x2FEFD800",
   "mixhash": "0x00000000000000000000000000000000000000647572616c65787365646c6578",
+  "gasLimit": "0x2FEFD800",
   "nonce": "0x0",
   "parentHash": "0x0000000000000000000000000000000000000000000000000000000000000000",
   "timestamp": "0x00"
 }
 EOF
-
+fi
 
 #### Make node list for tm.conf ########################################
 
@@ -183,7 +196,7 @@ done
 
 #### Complete each node's configuration ################################
 
-echo '[4] Creating Quorum keys and finishing configuration.'
+echo '[3] Creating Constellation keys'
 
 for i in $(seq 1 $NUMNODES)
 do
@@ -200,14 +213,16 @@ do
 
     # Generate Quorum-related keys (used by Constellation)
     docker run -v $pwd/$qd:/qdata -v $pwd/../scripts:/scripts $image_constellation /scripts/generate-keys.sh
-    echo 'Node '$i' public key: '`cat $qd/constellation/tm.pub`
+    echo '  Node '$i' public key: '`cat $qd/constellation/tm.pub`
 
     let n++
 done
-rm -rf genesis.json static-nodes.json
+rm -rf genesis.json static-nodes.json alloc.json ../tmp-ibft
 
 
 #### Create the docker-compose file ####################################
+
+echo '[4] Generating docker-compose.yml'
 
 cat > docker-compose.yml <<EOF
 version: '2'
@@ -223,6 +238,12 @@ services:
         ipv4_address: '172.13.0.100'
 
 EOF
+
+PARAM="raftInit"
+if [[ "$CONSENSUS" == "ibft" ]]
+then
+  PARAM="ibft"
+fi
 
 for index in ${!ips[*]}; do 
     n=$((index+1))
@@ -244,7 +265,7 @@ for index in ${!ips[*]}; do
   node_$n:
     container_name: node_$n
     image: $image_quorum
-    command: start.sh --bootnode="enode://$bootnode_enode@172.13.0.100:30301" --raftInit
+    command: start.sh --bootnode="enode://$bootnode_enode@172.13.0.100:30301" --$PARAM
     volumes:
       - './$qd:/qdata'
     networks:

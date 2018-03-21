@@ -6,6 +6,7 @@ This tests the setup to have geth (based on go-ethereum) and constellation run i
 
 This repository depends on the following repositories to be cloned and reside next to it:
 ```
+git clone git@github.com:jimthematrix/quorum-tests.git
 git clone git@github.com:jimthematrix/quorum.git
 git clone git@github.com:jimthematrix/constellation.git
 git clone git@github.com:getamis/istanbul-tools.git
@@ -23,6 +24,7 @@ from the project root. It should produce the following docker images:
 | jpmorganchase/constellation      | constellation node    | YES                 |
 | jpmorganchase/constellation-test | constellation node    | YES                 |
 | jpmorganchase/quorum-builder     | build environment     | NO                  |
+| istanbul-tools                   | IBFT CLI Tool         | NO                  |
 
 ## Generate configuration artifacts and docker-compose.yaml
 
