@@ -104,6 +104,7 @@ do
   ip=${ips[$k]}
   mkdir -p $qd/{logs,constellation}
   mkdir -p $qd/ethereum/geth
+  touch $qd/logs/dummy.txt
 
   bootnode_cmd="docker run -it -v $pwd/$qd:/qdata $image_quorum /usr/local/bin/bootnode"
 
