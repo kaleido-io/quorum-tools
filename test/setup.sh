@@ -182,28 +182,26 @@ EOF
 EOF
 fi
 
-#### Make node list for tm.conf ########################################
-
-nodelist=
-n=1
-for ip in ${cips[*]}
-do
-    sep=`[[ $ip != ${cips[0]} ]] && echo ","`
-    nodelist=${nodelist}${sep}'"http://'${ip}':9000/"'
-    let n++
-done
-
 
 #### Complete each node's configuration ################################
 
 echo '[3] Creating Constellation keys'
+
+#### Make node list for tm.conf ########################################
+
+nodelist=
+for ip in ${cips[*]}
+do
+    sep=`[[ $ip != ${cips[0]} ]] && echo ","`
+    nodelist=${nodelist}${sep}'"http://'${ip}':9000/"'
+done
 
 for i in $(seq 1 $NUMNODES)
 do
     qd=qdata_$i
 
     cat ../templates/tm.conf \
-        | sed s/_NODEIP_/${cips[$((n-1))]}/g \
+        | sed s/_NODEIP_/${cips[$((i-1))]}/g \
         | sed s%_NODELIST_%$nodelist%g \
               > $qd/constellation/tm.conf
 
