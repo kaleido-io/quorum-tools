@@ -170,7 +170,8 @@ EOF
   },
   "coinbase": "0x0000000000000000000000000000000000000000",
   "config": {
-    "homesteadBlock": 0
+    "homesteadBlock": 0,
+    "byzantiumBlock": 0
   },
   "difficulty": "0x0",
   "mixhash": "0x00000000000000000000000000000000000000647572616c65787365646c6578",
