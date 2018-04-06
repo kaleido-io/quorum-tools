@@ -110,14 +110,30 @@ GETH_ARGS="$GETH_ARGS --wsorigins=$wsOrigins"
 # the geth node should not start until constellation started and
 # generated the shared IPC
 #
-while [ ! -f $TMCONF ]
+while [[ (! -a /qdata/constellation/tm.ipc) || (! -f $TMCONF) ]]
 do
+  echo "Waiting for constellation configuration file to be prepared"
   sleep 2
 done
 
-# sleep an additional 2 seconds to give the constellation node a chance to start
-sleep 2
+#
+# tm.ipc existence is required but not sufficient to guarantee
+# constellation is ready. we have to actually try to contact it
+#
+# turn off exit on error to allow curl to fail and continue waiting
+# when constellation is not ready yet
+set +e
+echo "Checking if constellation is ready"
+health=`curl --unix-socket /qdata/constellation/tm.ipc "http://c/upcheck"`
+echo "  Status: $health"
+while [[ $health != "I'm up!" ]]
+do
+  sleep 2
+  health=`curl --unix-socket /qdata/constellation/tm.ipc "http://c/upcheck"`
+  echo "  Status: $health"
+done
 
+set -e
 #
 # ALL SET!
 #

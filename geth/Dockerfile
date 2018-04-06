@@ -9,7 +9,8 @@ RUN apt-get update && \
         libdb-dev \
         libsodium-dev \
         libtinfo-dev \
-        solc && \
+        solc \
+        curl && \
     rm -rf /var/lib/apt/lists/*
 
 COPY \
