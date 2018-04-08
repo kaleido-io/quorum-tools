@@ -4,6 +4,8 @@ This tests the setup to have Quorum (based on go-ethereum) and Constellation to 
 
 ## Pre-requisite
 
+### Repositories
+
 This repository depends on the following repositories to be cloned and reside next to it:
 ```
 git clone git@github.com:jimthematrix/quorum-tests.git
@@ -25,6 +27,10 @@ from the project root. It should produce the following docker images:
 | jpmorganchase/constellation-test | constellation node    | YES                 |
 | jpmorganchase/quorum-builder     | build environment     | NO                  |
 | istanbul-tools                   | IBFT CLI Tool         | NO                  |
+
+### Tools
+
+`setup.sh` depends upon [jq](https://stedolan.github.io/jq/).  Please ensure this `jq` is installed
 
 ## Generate configuration artifacts and docker-compose.yaml
 
