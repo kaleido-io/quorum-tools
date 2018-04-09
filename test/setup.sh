@@ -273,6 +273,7 @@ for index in ${!ips[*]}; do
         ipv4_address: '$ip'
     ports:
       - $((n+22000)):8545
+      - $((n+23000)):8546 
     depends_on:
       - constellation_$n
       - bootnode
