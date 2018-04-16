@@ -20,5 +20,5 @@ do
 done
 
 echo "[*] Starting Constellation node"
-nohup /usr/local/bin/constellation-node $TMCONF -v3 2>>/qdata/logs/constellation.log
+nohup constellation-node $TMCONF -v3 2>>/qdata/logs/constellation.log
 
