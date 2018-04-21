@@ -54,6 +54,9 @@ while [ "$1" != "" ]; do
         --wsorigins)
             wsOrigins=$VALUE
             ;;
+        --blockperiod)
+            blockPeriod=$VALUE
+            ;;
         *)
             echo "ERROR: unknown parameter \"$PARAM\""
             exit 1
@@ -67,6 +70,7 @@ echo "initial Raft cluster? = $raftInit"
 echo "Raft ID               = $raftID"
 echo "Istanbul BFT          = $ibft"
 echo "WS Origins            = $wsOrigins"
+echo "Block Period          = $blockPeriod"
 
 #
 # since the bootnode is required, do not proceed until
@@ -87,6 +91,10 @@ fi
 if [ "$ibft" == YES ]; then
   # using IBFT consensus
   GETH_ARGS="$COMMON_ARGS $bootnode $IBFT_ARGS"
+
+  if [ $blockPeriod != "" ]; then
+    GETH_ARGS="$GETH_ARGS  --istanbul.blockperiod $blockPeriod"
+  fi
 elif [ "$raftInit" == YES ]; then
   # initial Raft cluster
   GETH_ARGS="$COMMON_ARGS $bootnode $RAFT_ARGS"
