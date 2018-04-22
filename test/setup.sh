@@ -19,6 +19,7 @@
 
 CONSENSUS="raft"
 NUMNODES=5
+BLOCKPERIOD=1
 
 while [[ $# -gt 0 ]]
 do
@@ -35,6 +36,11 @@ case $key in
     shift # past argument
     shift # past value
     ;;
+    -b|--blockperiod)
+    BLOCKPERIOD="$2"
+    shift # past argument
+    shift # past value
+    ;;
     *)    # unknown option
     shift # past argument
     ;;
@@ -43,6 +49,7 @@ done
 
 echo "Consensus:        $CONSENSUS"
 echo "Number of Nodes:  $NUMNODES"
+echo "Block Period:     $BLOCKPERIOD"
 
 if [[ $NUMNODES == *"+"* ]]; then
   IFS='+' read -ra ARR <<< "$NUMNODES"
@@ -249,9 +256,11 @@ services:
 EOF
 
 PARAM="raftInit"
+BLOCKPARAM=""
 if [[ "$CONSENSUS" == "ibft" ]]
 then
   PARAM="ibft"
+  BLOCKPARAM="--blockperiod=$BLOCKPERIOD"
 fi
 
 for index in ${!ips[*]}; do 
@@ -274,7 +283,7 @@ for index in ${!ips[*]}; do
   node_$n:
     container_name: node_$n
     image: $image_quorum
-    command: start.sh --bootnode="enode://$bootnode_enode@172.13.0.100:30301" --$PARAM
+    command: start.sh --bootnode="enode://$bootnode_enode@172.13.0.100:30301" --$PARAM $BLOCKPARAM
     volumes:
       - './$qd:/qdata'
     networks:
