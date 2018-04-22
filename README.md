@@ -43,7 +43,7 @@ The *setup.sh* script creates a basic Quorum network with Raft consensus. There'
 
 The following arguments are supported:
 ```
--n, --nodes         Number of Quorum nodes (geth + constellation) to generate. Default: 5
+-n, --nodes         Number of Quorum nodes (geth + constellation) to generate. Default: 5. Can use "x+y" syntax to specify validators and non-validators. For instance, "./setup.sh -n 3+2 -c ibft" means generating 3 validators and 2 non-validators
 -c, --consensus     Consensus to use. Valid values are raft and ibft. Default: raft
 ```
 

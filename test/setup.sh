@@ -44,6 +44,16 @@ done
 echo "Consensus:        $CONSENSUS"
 echo "Number of Nodes:  $NUMNODES"
 
+if [[ $NUMNODES == *"+"* ]]; then
+  IFS='+' read -ra ARR <<< "$NUMNODES"
+  NUM_VALIDATORS=${ARR[0]}
+  NUM_NON_VALIDATORS=${ARR[1]}
+  NUMNODES=$(( $NUM_VALIDATORS + $NUM_NON_VALIDATORS ))
+else
+  NUM_VALIDATORS=NUMNODES
+  NUM_NON_VALIDATORS=0
+fi
+
 mkdir tmp-ibft
 cd tmp-ibft
 pwd=`pwd`
@@ -51,8 +61,8 @@ pwd=`pwd`
 if [[ "$CONSENSUS" == "ibft" ]]
 then
   cp ../../istanbul/scripts/run.sh ./
-  echo "Generating an IBFT network with $NUMNODES nodes"
-  bash -c "docker run -it -v $pwd:/ibft istanbul-tools sh -c /ibft/run.sh --nodes $NUMNODES"
+  echo "Generating an IBFT network with $NUM_VALIDATORS nodes"
+  bash -c "docker run -it -v $pwd:/ibft istanbul-tools sh -c \"/ibft/run.sh --nodes $NUM_VALIDATORS\""
 fi
 
 #### Configuration options #############################################
@@ -108,13 +118,13 @@ do
 
   bootnode_cmd="docker run -it -v $pwd/$qd:/qdata $image_quorum /usr/local/bin/bootnode"
 
-  if [[ "$CONSENSUS" == "ibft" ]]
+  if [[ "$CONSENSUS" == "ibft" && $i -le $NUM_VALIDATORS ]]
   then
-    # for IBFT, all key materials have already been generated in the previous step
+    # for IBFT validators, all key materials have already been generated in the previous step
     # just copy them over
     cp ../tmp-ibft/$k/nodekey $qd/ethereum/
   else
-    # for Raft, generate from scratch
+    # for Raft or IBFT non-validators, generate from scratch
     $bootnode_cmd -genkey /qdata/ethereum/nodekey
   fi
 
