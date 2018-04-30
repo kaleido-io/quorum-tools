@@ -260,7 +260,7 @@ BLOCKPARAM=""
 if [[ "$CONSENSUS" == "ibft" ]]
 then
   PARAM="ibft"
-  BLOCKPARAM="--blockperiod=$BLOCKPERIOD"
+  BLOCKPARAM="--blockperiod=$BLOCKPERIOD --roundchangetimer=$(((BLOCKPERIOD + 10) * 1000))"
 fi
 
 for index in ${!ips[*]}; do 
