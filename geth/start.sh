@@ -57,6 +57,9 @@ while [ "$1" != "" ]; do
         --blockperiod)
             blockPeriod=$VALUE
             ;;
+        --roundchangetimer)
+            roundChangeTimer=$VALUE
+            ;;
         *)
             echo "ERROR: unknown parameter \"$PARAM\""
             exit 1
@@ -65,12 +68,13 @@ while [ "$1" != "" ]; do
     shift
 done
 
-echo "bootnode URI          = $bootnode"
-echo "initial Raft cluster? = $raftInit"
-echo "Raft ID               = $raftID"
-echo "Istanbul BFT          = $ibft"
-echo "WS Origins            = $wsOrigins"
-echo "Block Period          = $blockPeriod"
+echo "bootnode URI              = $bootnode"
+echo "WS Origins                = $wsOrigins"
+echo "initial Raft cluster?     = $raftInit"
+echo "Raft ID                   = $raftID"
+echo "Istanbul BFT              = $ibft"
+echo "IBFT Round Change Timer   = $roundChangeTimer"
+echo "Block Period              = $blockPeriod"
 
 #
 # since the bootnode is required, do not proceed until
@@ -93,7 +97,7 @@ if [ "$ibft" == YES ]; then
   GETH_ARGS="$COMMON_ARGS $bootnode $IBFT_ARGS"
 
   if [ $blockPeriod != "" ]; then
-    GETH_ARGS="$GETH_ARGS  --istanbul.blockperiod $blockPeriod"
+    GETH_ARGS="$GETH_ARGS  --istanbul.blockperiod $blockPeriod --istanbul.requesttimeout $roundChangeTimer"
   fi
 elif [ "$raftInit" == YES ]; then
   # initial Raft cluster
