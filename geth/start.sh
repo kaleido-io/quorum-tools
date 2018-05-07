@@ -9,7 +9,7 @@ set -e
 ### Configuration Options
 TMCONF=/qdata/constellation/tm.conf
 
-COMMON_ARGS="--datadir /qdata/ethereum --txpool.pricelimit 0 --permissioned --rpc --rpcport 8545 --rpcaddr 0.0.0.0 --ws --wsport 8546 --wsaddr 0.0.0.0 --unlock 0 --password /qdata/ethereum/passwords.txt --verbosity 4 --bootnodes"
+COMMON_ARGS="--datadir /qdata/ethereum --gasprice 0 --txpool.pricelimit 0 --permissioned --rpc --rpcport 8545 --rpcaddr 0.0.0.0 --ws --wsport 8546 --wsaddr 0.0.0.0 --unlock 0 --password /qdata/ethereum/passwords.txt --verbosity 4 --bootnodes"
 COMMON_APIS="admin,db,eth,debug,miner,net,shh,txpool,personal,web3"
 RAFT_APIS="$COMMON_APIS,raft"
 RAFT_ARGS="--raft --rpcapi $RAFT_APIS --wsapi $RAFT_APIS"
