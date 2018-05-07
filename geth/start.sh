@@ -106,8 +106,9 @@ echo "Istanbul BFT              = $ibft"
 echo "IBFT Round Change Timer   = $roundChangeTimer"
 echo "Block Period              = $blockPeriod"
 echo "txpool total size         = $txpoolSize"
+echo "txpool queue size         = $(( txpoolSize / 4 ))"
 echo "StateDB Cache             = $dbCache"
-echo "Trie Cache Gens"          = $trieCacheGens
+echo "Trie Cache Gens           = $trieCacheGens"
 
 #
 # since the bootnode is required, do not proceed until
@@ -149,7 +150,7 @@ else
   GETH_ARGS="$COMMON_ARGS $bootnode $RAFT_ARGS --raftjoinexisting $raftID"
 fi
 
-GETH_ARGS="$GETH_ARGS --wsorigins=$wsOrigins --txpool.globalslots=$txpoolSize --cache=$dbCache"
+GETH_ARGS="$GETH_ARGS --wsorigins=$wsOrigins --txpool.globalslots=$txpoolSize --txpool.globalqueue $(( txpoolSize / 4 )) --cache=$dbCache"
 
 #
 # the geth node should not start until constellation started and
