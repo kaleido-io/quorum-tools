@@ -19,6 +19,7 @@ IBFT_ARGS="--syncmode full --mine --rpcapi $IBFT_APIS --wsapi $IBFT_APIS"
 wsOrigins="*"
 txpoolSize=4096 # default value in Geth 1.7+
 dbCache=128 # default size in Geth 1.7
+trieCacheGens=120
 
 ###
 ### These are the arguments supported:
@@ -78,6 +79,11 @@ if [ "$ibft" == YES ]; then
   if [ "$PERF_IBFT_CACHE" != "" ]; then
     dbCache=$PERF_IBFT_CACHE
   fi
+
+  if [ "$PERF_IBFT_TRIE_CACHE_GENS" != "" ]; then
+    trieCacheGens=$PERF_IBFT_TRIE_CACHE_GENS
+  fi
+
 elif [ "$raftInit" == YES ] || [ "$raftID" != "" ]; then
   if [ "$PERF_RAFT_TXPOOL_SIZE" != "" ]; then
     txpoolSize=$PERF_RAFT_TXPOOL_SIZE
@@ -85,6 +91,10 @@ elif [ "$raftInit" == YES ] || [ "$raftID" != "" ]; then
 
   if [ "$PERF_RAFT_CACHE" != "" ]; then
     dbCache=$PERF_RAFT_CACHE
+  fi
+
+  if [ "$PERF_RAFT_TRIE_CACHE_GENS" != "" ]; then
+    trieCacheGens=$PERF_RAFT_TRIE_CACHE_GENS
   fi
 fi
 
@@ -97,6 +107,7 @@ echo "IBFT Round Change Timer   = $roundChangeTimer"
 echo "Block Period              = $blockPeriod"
 echo "txpool total size         = $txpoolSize"
 echo "StateDB Cache             = $dbCache"
+echo "Trie Cache Gens"          = $trieCacheGens
 
 #
 # since the bootnode is required, do not proceed until
