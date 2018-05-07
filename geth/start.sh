@@ -62,12 +62,6 @@ while [ "$1" != "" ]; do
         --roundchangetimer)
             roundChangeTimer=$VALUE
             ;;
-        --txpoolsize)
-            txpoolSize=$VALUE
-            ;;
-        --cache)
-            dbCache=$VALUE
-            ;;
         *)
             echo "ERROR: unknown parameter \"$PARAM\""
             exit 1
@@ -75,6 +69,24 @@ while [ "$1" != "" ]; do
     esac
     shift
 done
+
+if [ "$ibft" == YES ]; then
+  if [ "$PERF_IBFT_TXPOOL_SIZE" != "" ]; then
+    txpoolSize=$PERF_IBFT_TXPOOL_SIZE
+  fi
+
+  if [ "$PERF_IBFT_CACHE" != "" ]; then
+    dbCache=$PERF_IBFT_CACHE
+  fi
+elif [ "$raftInit" == YES || "$raftID" != "" ]; then
+  if [ "$PERF_RAFT_TXPOOL_SIZE" != "" ]; then
+    txpoolSize=$PERF_RAFT_TXPOOL_SIZE
+  fi
+
+  if [ "$PERF_RAFT_CACHE" != "" ]; then
+    dbCache=$PERF_RAFT_CACHE
+  fi
+fi
 
 echo "bootnode URI              = $bootnode"
 echo "WS Origins                = $wsOrigins"
