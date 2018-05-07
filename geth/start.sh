@@ -17,6 +17,8 @@ IBFT_APIS="$COMMON_APIS,istanbul"
 IBFT_ARGS="--syncmode full --mine --rpcapi $IBFT_APIS --wsapi $IBFT_APIS"
 
 wsOrigins="*"
+txpoolSize=4096 # default value in Geth 1.7+
+dbCache=128 # default size in Geth 1.7
 
 ###
 ### These are the arguments supported:
@@ -60,6 +62,12 @@ while [ "$1" != "" ]; do
         --roundchangetimer)
             roundChangeTimer=$VALUE
             ;;
+        --txpoolsize)
+            txpoolSize=$VALUE
+            ;;
+        --cache)
+            dbCache=$VALUE
+            ;;
         *)
             echo "ERROR: unknown parameter \"$PARAM\""
             exit 1
@@ -75,6 +83,8 @@ echo "Raft ID                   = $raftID"
 echo "Istanbul BFT              = $ibft"
 echo "IBFT Round Change Timer   = $roundChangeTimer"
 echo "Block Period              = $blockPeriod"
+echo "txpool total size         = $txpoolSize"
+echo "StateDB Cache             = $dbCache"
 
 #
 # since the bootnode is required, do not proceed until
@@ -116,7 +126,7 @@ else
   GETH_ARGS="$COMMON_ARGS $bootnode $RAFT_ARGS --raftjoinexisting $raftID"
 fi
 
-GETH_ARGS="$GETH_ARGS --wsorigins=$wsOrigins"
+GETH_ARGS="$GETH_ARGS --wsorigins=$wsOrigins --txpool.globalslots=$txpoolSize --cache=$dbCache"
 
 #
 # the geth node should not start until constellation started and
