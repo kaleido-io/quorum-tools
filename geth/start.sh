@@ -78,7 +78,7 @@ if [ "$ibft" == YES ]; then
   if [ "$PERF_IBFT_CACHE" != "" ]; then
     dbCache=$PERF_IBFT_CACHE
   fi
-elif [ "$raftInit" == YES || "$raftID" != "" ]; then
+elif [ "$raftInit" == YES ] || [ "$raftID" != "" ]; then
   if [ "$PERF_RAFT_TXPOOL_SIZE" != "" ]; then
     txpoolSize=$PERF_RAFT_TXPOOL_SIZE
   fi
