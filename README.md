@@ -45,6 +45,7 @@ The following arguments are supported:
 ```
 -n, --nodes         Number of Quorum nodes (geth + constellation) to generate. Default: 5. Can use "x+y" syntax to specify validators and non-validators. For instance, "./setup.sh -n 3+2 -c ibft" means generating 3 validators and 2 non-validators
 -c, --consensus     Consensus to use. Valid values are raft and ibft. Default: raft
+-b, --blockperiod   Applicable to IBFT only. The interval to produce blocks. The closely related parameter, istanbul.requesttimeout, will be automatically calculated by adding 10sec to the blockperiod value in order to make the configuration work.
 ```
 
 1. bootnode
@@ -100,7 +101,7 @@ On the Docker host, a *qdata_N/* directory for each node is created with the str
 
 ### Adding new nodes to an existing network
 
-The docker image jpmorganchase/quorum uses a startup script that is designed to start the node in one of the following two modes:
+The docker image jpmorganchase/quorum uses a startup script that is designed to start the node in one of the following modes:
 1. part of the initial Raft cluster. Notice in the docker-compose.yml file, the following command is used for this purpose:
 ```
 command: start.sh --bootnode="enode://c3475a286a...6ebc6@172.13.0.100:30301" --raftInit
@@ -109,7 +110,14 @@ command: start.sh --bootnode="enode://c3475a286a...6ebc6@172.13.0.100:30301" --r
 ```
 command: start.sh --bootnode="enode://c3475a286a...6ebc6@172.13.0.100:30301" --raftID=5
 ```
-
 Note: the number `5` is the placeholder of the Raft node ID returned by calling `raft.addPeer()` in the geth console connected to an existing geth node of the network.
+3. an IBFT node:
+```
+command: start.sh --bootnode="enode://c3475a286a...6ebc6@172.13.0.100:30301" --ibft
+```
+4. an IBFT node using 5 seconds block period:
+```
+command: start.sh --bootnode="enode://c3475a286a...6ebc6@172.13.0.100:30301" --ibft --blockperiod=5
+```
 
 
