@@ -188,7 +188,8 @@ EOF
   },
   "coinbase": "0x0000000000000000000000000000000000000000",
   "config": {
-    "homesteadBlock": 0
+    "homesteadBlock": 0,
+    "byzantiumBlock": 0
   },
   "difficulty": "0x0",
   "mixhash": "0x00000000000000000000000000000000000000647572616c65787365646c6578",
@@ -291,6 +292,7 @@ for index in ${!ips[*]}; do
         ipv4_address: '$ip'
     ports:
       - $((n+22000)):8545
+      - $((n+23000)):8546 
     depends_on:
       - constellation_$n
       - bootnode
