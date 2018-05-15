@@ -8,9 +8,9 @@ This tests the setup to have Quorum (based on go-ethereum) and Constellation to 
 
 This repository depends on the following repositories to be cloned and reside next to it:
 ```
-git clone git@github.com:jimthematrix/quorum-tests.git
-git clone git@github.com:jimthematrix/quorum.git
-git clone git@github.com:jimthematrix/constellation.git
+git clone git@github.com:kaleido-io/quorum-tools.git
+git clone git@github.com:jpmorganchase/quorum.git
+git clone git@github.com:jpmorganchase/constellation.git
 git clone git@github.com:getamis/istanbul-tools.git
 ```
 
@@ -111,6 +111,7 @@ command: start.sh --bootnode="enode://c3475a286a...6ebc6@172.13.0.100:30301" --r
 command: start.sh --bootnode="enode://c3475a286a...6ebc6@172.13.0.100:30301" --raftID=5
 ```
 Note: the number `5` is the placeholder of the Raft node ID returned by calling `raft.addPeer()` in the geth console connected to an existing geth node of the network.
+
 3. an IBFT node:
 ```
 command: start.sh --bootnode="enode://c3475a286a...6ebc6@172.13.0.100:30301" --ibft
