@@ -42,6 +42,9 @@ while [ "$1" != "" ]; do
     PARAM=`echo $1 | awk -F= '{print $1}'`
     VALUE=`echo $1 | awk -F= '{print $2}'`
     case $PARAM in
+        --networkid)
+            networkID=$VALUE
+            ;;
         --ibft)
             ibft=YES
             ;;
@@ -98,6 +101,7 @@ elif [ "$raftInit" == YES ] || [ "$raftID" != "" ]; then
   fi
 fi
 
+echo "network id                = $networkID"
 echo "bootnode URI              = $bootnode"
 echo "WS Origins                = $wsOrigins"
 echo "initial Raft cluster?     = $raftInit"
@@ -121,6 +125,15 @@ if [ "$bootnode" == "" ]; then
   done
 
   bootnode=`cat /qdata/ethereum/bootnode.info`
+fi
+
+if [ "$networkID" == "" ]; then
+  while [ ! -f /qdata/ethereum/networkid.info ]
+  do
+    sleep 2
+  done
+
+  networkID=`cat /qdata/ethereum/networkid.info`
 fi
 
 #
@@ -150,7 +163,7 @@ else
   GETH_ARGS="$COMMON_ARGS $bootnode $RAFT_ARGS --raftjoinexisting $raftID"
 fi
 
-GETH_ARGS="$GETH_ARGS --wsorigins=$wsOrigins --txpool.globalslots=$txpoolSize --txpool.globalqueue $(( txpoolSize / 4 )) --cache=$dbCache"
+GETH_ARGS="$GETH_ARGS --wsorigins=$wsOrigins --txpool.globalslots=$txpoolSize --txpool.globalqueue $(( txpoolSize / 4 )) --cache=$dbCache --networkid $networkID"
 
 #
 # the geth node should not start until constellation started and

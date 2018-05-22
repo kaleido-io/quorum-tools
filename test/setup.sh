@@ -188,7 +188,9 @@ EOF
   },
   "coinbase": "0x0000000000000000000000000000000000000000",
   "config": {
+    "chainId": 2018,
     "homesteadBlock": 0,
+    "eip155Block": 0,
     "byzantiumBlock": 0
   },
   "difficulty": "0x0",
@@ -284,7 +286,7 @@ for index in ${!ips[*]}; do
   node_$n:
     container_name: node_$n
     image: $image_quorum
-    command: start.sh --bootnode="enode://$bootnode_enode@172.13.0.100:30301" --$PARAM $BLOCKPARAM
+    command: start.sh --bootnode="enode://$bootnode_enode@172.13.0.100:30301" --$PARAM $BLOCKPARAM --networkid 2018
     volumes:
       - './$qd:/qdata'
     networks:

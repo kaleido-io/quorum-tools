@@ -16,7 +16,7 @@ RUN apt-get update && \
 COPY \
         ./quorum/build/bin/geth \
         ./quorum/build/bin/bootnode \
-        ./quorum-tests/geth/start.sh \
+        ./quorum-tools/geth/start.sh \
     /usr/local/bin/
 
 CMD ["/usr/local/bin/start.sh"]
