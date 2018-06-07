@@ -1,0 +1,23 @@
+{
+  "name": "nodebootstrapper",
+  "version": "1.0.0",
+  "description": "Bootstrapper for Geth and Quorum nodes",
+  "main": "index.js",
+  "scripts": {
+    "start": "node ./index.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/kaleido-io/quorum-tools.git"
+  },
+  "bugs": {
+    "url": "https://github.com/kaleido-io/quorum-tools/issues"
+  },
+  "homepage": "https://github.com/kaleido-io/quorum-tools",
+  "dependencies": {
+    "aws-sdk": "^2.224.1",
+    "fs-extra": "^5.0.0",
+    "log4js": "^2.8.0",
+    "yargs": "^11.0.0"
+  }
+}

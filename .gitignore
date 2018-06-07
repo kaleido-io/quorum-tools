@@ -1,1 +1,3 @@
-test/tmp
+examples/tmp
+boot/node_modules
+test/node_modules
