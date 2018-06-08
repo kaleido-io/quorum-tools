@@ -66,7 +66,7 @@ class Bootstrapper {
     };
 
     let _raftID = raftID || config.raft_id;
-    if (consensus === 'RAFT') {
+    if (consensus === 'RAFT' && !raftInit) {
       // require raftID is not IBFT and not initial RAFT node
       if (!_raftID) return false;
       logger.info(`raftID: ${_raftID}`);
