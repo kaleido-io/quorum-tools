@@ -1,3 +1,7 @@
+/* Copyright (C) 2018 Kaleido, a ConsenSys business - All Rights Reserved
+ * Unauthorized copying of this file, via any medium is strictly prohibited
+ * Proprietary and confidential
+ */
 'use strict';
 
 const chai = require('chai');

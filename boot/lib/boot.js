@@ -1,3 +1,7 @@
+/* Copyright (C) 2018 Kaleido, a ConsenSys business - All Rights Reserved
+ * Unauthorized copying of this file, via any medium is strictly prohibited
+ * Proprietary and confidential
+ */
 'use strict';
 
 const EncryptedFile = require('./encrypted-file.js');
@@ -15,6 +19,7 @@ const DATADIR_DECRYPTED = '/qdata_decrypted';
 const BOOT_CONFIG = 'ethereum/boot.config';
 const TMCONF = 'constellation/tm.conf';
 
+const poa = argv.poa;
 const ibft = argv.ibft;
 const raftInit = argv.raftInit;
 const raftID = argv.raftID;
@@ -24,7 +29,7 @@ const blockPeriod = argv.blockperiod;
 const roundChangeTimer = argv.roundChangeTimer;
 
 const wsOrigins = argv.wsOrigins || "*";
-const consensus = (ibft) ? 'IBFT' : ((raftInit || '' !== raftID) ? 'RAFT' : 'POA');
+const consensus = (poa) ? 'POA' : ((ibft) ? 'IBFT' : 'RAFT');
 const txpoolSize = process.env[`PERF_${consensus}_TXPOOL_SIZE`] || 4096; // default value in Geth 1.7+
 const dbCache = process.env[`PERF_${consensus}_CACHE`] || 128; // default size in Geth 1.7
 const trieCacheGens = process.env[`PERF_${consensus}_TRIE_CACHE_GENS`] || 120;
@@ -55,18 +60,18 @@ class Bootstrapper {
     if (!_networkID) return false;
     logger.info(`networkid: ${_networkID}`);
 
+    let _config = {
+      bootnode: _bootnode,
+      network_id: _networkID
+    };
+
     let _raftID = raftID || config.raft_id;
-    if (!ibft && !raftInit) {
+    if (consensus === 'RAFT') {
       // require raftID is not IBFT and not initial RAFT node
       if (!_raftID) return false;
       logger.info(`raftID: ${_raftID}`);
+      _config.raft_id = _raftID;
     }
-
-    let _config = {
-      bootnode: _bootnode,
-      network_id: _networkID,
-      raft_id: _raftID
-    };
 
     if (consensus !== 'POA') {
       // for quorum we require constellation node to be ready
@@ -122,26 +127,34 @@ class Bootstrapper {
   }
 
   async writeCommandLineArgs(config) {
-    const COMMON_ARGS = `--datadir ${DATADIR}/ethereum --gasprice 0 --txpool.pricelimit 0 --permissioned --rpc --rpcport 8545 --rpcaddr 0.0.0.0 --ws --wsport 8546 --wsaddr 0.0.0.0 --unlock 0 --password /qdata/ethereum/passwords.txt --verbosity 4`;
+    const COMMON_ARGS = `--datadir ${DATADIR}/ethereum --gasprice 0 --txpool.pricelimit 0 --rpc --rpcport 8545 --rpcaddr 0.0.0.0 --ws --wsport 8546 --wsaddr 0.0.0.0 --unlock 0 --password /qdata/ethereum/passwords.txt --verbosity 4`;
     const COMMON_APIS = "admin,db,eth,debug,miner,net,shh,txpool,personal,web3";
     const RAFT_APIS = `${COMMON_APIS},raft`;
     const IBFT_APIS = `${COMMON_APIS},istanbul`;
+    const POA_APIS = `${COMMON_APIS},clique`;
 
     let args = `${COMMON_ARGS} --bootnodes ${config.bootnode}`;
 
-    if (ibft) {
-      args = `${args} --syncmode full --mine --rpcapi ${IBFT_APIS} --wsapi ${IBFT_APIS}`;
+    if (consensus === 'POA') {
+      args = `${args} --syncmode full --mine --rpcapi ${POA_APIS} --wsapi ${POA_APIS}`;
+    } else {
+      // for Quorum always turn on "permissioned"
+      args = `${args} --permissioned`;
 
-      if (blockPeriod) {
-        args = `${args} --istanbul.blockperiod ${blockPeriod} --istanbul.requesttimeout ${roundChangeTimer}`;
+      if (ibft) {
+        args = `${args} --syncmode full --mine --rpcapi ${IBFT_APIS} --wsapi ${IBFT_APIS}`;
+
+        if (blockPeriod) {
+          args = `${args} --istanbul.blockperiod ${blockPeriod} --istanbul.requesttimeout ${roundChangeTimer}`;
+        }
+      } else if (raftInit) {
+        args = `${args} --raft --rpcapi ${RAFT_APIS} --wsapi ${RAFT_APIS}`;
+      } else if (raftID) {
+        args = `${args} --raft --rpcapi ${RAFT_APIS} --wsapi ${RAFT_APIS} --raftjoinexisting ${raftID}`;
       }
-    } else if (raftInit) {
-      args = `${args} --raft --rpcapi ${RAFT_APIS} --wsapi ${RAFT_APIS}`;
-    } else if (raftID) {
-      args = `${args} --raft --rpcapi ${RAFT_APIS} --wsapi ${RAFT_APIS} --raftjoinexisting ${raftID}`;
     }
 
-    args = `${args} --wsorigins=${wsOrigins} --txpool.globalslots=${txpoolSize} --txpool.globalqueue ${txpoolSize / 4} --cache=${dbCache} --networkid ${config.network_id}`;
+    args = `${args} --wsorigins=${wsOrigins} --txpool.globalslots=${txpoolSize} --txpool.globalqueue ${txpoolSize / 4} --cache=${dbCache} --trie-cache-gens ${trieCacheGens} --networkid ${config.network_id}`;
     await fs.writeFile(path.join(DATADIR, 'args.txt'), args);
   }
 
