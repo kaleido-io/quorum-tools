@@ -16,10 +16,10 @@
 ### if ibft is specified, both raftInit and raftID are ignored
 ###
 ### If the bootnode argument is omitted, the program enters a sleep loop until a file
-### "bootnode.info" is found.
+### "boot.config" is found with property "bootnode".
 ###
 ### If the raft* argument is omitted, the program assumes this is joining an existing
-### cluster, and enters a sleep loop until a file "raft.id" is found.
+### cluster, and enters a sleep loop until a file "boot.config" with "raft_id" is found.
 ###
 
 node /usr/local/src/index.js $@
