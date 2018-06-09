@@ -36,7 +36,7 @@ const raftID = argv.raftID;
 const networkID = argv.networkid;
 const bootnode = argv.bootnode;
 const blockPeriod = argv.blockperiod;
-const roundChangeTimer = argv.roundChangeTimer;
+const roundChangeTimer = argv.roundchangetimer;
 
 const wsOrigins = argv.wsOrigins || "*";
 const consensus = (poa) ? 'POA' : ((ibft) ? 'IBFT' : 'RAFT');

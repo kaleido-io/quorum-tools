@@ -86,7 +86,7 @@ describe('writeCommandLineArgs()', () => {
     process.argv.push('--ibft');
     process.argv.push('--blockperiod');
     process.argv.push('5');
-    process.argv.push('--roundChangeTimer');
+    process.argv.push('--roundchangetimer');
     process.argv.push('15');
     process.env['PERF_IBFT_TXPOOL_SIZE'] = 128;
     process.env['PERF_IBFT_CACHE'] = 64;
