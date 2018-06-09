@@ -159,8 +159,8 @@ class Bootstrapper {
         }
       } else if (raftInit) {
         args = `${args} --raft --rpcapi ${RAFT_APIS} --wsapi ${RAFT_APIS}`;
-      } else if (raftID) {
-        args = `${args} --raft --rpcapi ${RAFT_APIS} --wsapi ${RAFT_APIS} --raftjoinexisting ${raftID}`;
+      } else if (config.raft_id) {
+        args = `${args} --raft --rpcapi ${RAFT_APIS} --wsapi ${RAFT_APIS} --raftjoinexisting ${config.raft_id}`;
       }
     }
 

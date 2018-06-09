@@ -186,7 +186,7 @@ describe('writeCommandLineArgs()', () => {
 
     sinon.stub(Boot.fs, 'writeFile');
 
-    new Boot().writeCommandLineArgs({ bootnode: 'enode://bcdefg@1.2.3.7:30301', network_id: 12345 });
+    new Boot().writeCommandLineArgs({ bootnode: 'enode://bcdefg@1.2.3.7:30301', network_id: 12345, raft_id: '5' });
 
     expect(Boot.fs.writeFile.getCall(0).args[0]).to.equal('/qdata/args.txt');
     expect(Boot.fs.writeFile.getCall(0).args[1]).to.equal(
