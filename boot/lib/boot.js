@@ -85,7 +85,7 @@ class Bootstrapper {
 
     // if config says the key materials are encrypted, need to decrypt them and
     // save the decrypted files to the /qdata_decrypted folder
-    this.copyKeyMaterials();
+    await this.copyKeyMaterials();
 
     if (consensus === 'IBFT' || consensus === 'RAFT') {
       // for quorum we require constellation node to be ready
