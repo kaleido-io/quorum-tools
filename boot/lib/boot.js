@@ -174,6 +174,8 @@ class Bootstrapper {
 
   async copyKeyMaterials() {
     logger.info('Decrypting and copying nodekey');
+    await fs.ensureDir(path.join(DATADIR_DECRYPTED, 'ethereum'));
+
     let nodeKey = await this.readKeyMaterialsFromFile(path.join(DATADIR, 'ethereum/nodekey'));
     await fs.writeFile(path.join(DATADIR_DECRYPTED, 'ethereum/nodekey'), nodeKey);
 
@@ -183,6 +185,7 @@ class Bootstrapper {
 
     if (consensus === 'IBFT' || consensus === 'RAFT') {
       logger.info('Decrypting and copying constellation tm.key');
+      await fs.ensureDir(path.join(DATADIR_DECRYPTED, 'constellation'));
       let tmKey = await this.readKeyMaterialsFromFile(path.join(DATADIR, 'constellation/tm.key'));
       await fs.writeFile(path.join(DATADIR_DECRYPTED, 'constellation/tm.key'), tmKey);
     }

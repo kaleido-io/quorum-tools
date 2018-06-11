@@ -35,6 +35,7 @@ describe('writeCommandLineArgs()', () => {
     sinon.stub(Boot.fs, 'readFile').withArgs('/qdata/ethereum/boot.config').rejects();
 
     let bootstrapper = new Boot();
+    sinon.stub(bootstrapper, 'copyKeyMaterials').resolves();
     let _config = await bootstrapper.checkDependencies();
     expect(_config).to.be.false;
     Boot.fs.readFile.restore();
@@ -70,6 +71,7 @@ describe('writeCommandLineArgs()', () => {
     .listen('/qdata/constellation/tm.ipc');
 
     let bootstrapper = new Boot();
+    sinon.stub(bootstrapper, 'copyKeyMaterials').resolves();
     let _config = await bootstrapper.checkDependencies();
     expect(_config.bootnode).to.equal('enode://bcdefg@1.2.3.7:30301');
     expect(_config.network_id).to.equal(23456);
@@ -96,7 +98,9 @@ describe('writeCommandLineArgs()', () => {
 
     sinon.stub(Boot.fs, 'writeFile');
 
-    new Boot().writeCommandLineArgs({ bootnode: 'enode://bcdefg@1.2.3.7:30301', network_id: 12345 });
+    let bootstrapper = new Boot();
+    sinon.stub(bootstrapper, 'copyKeyMaterials').resolves();
+    bootstrapper.writeCommandLineArgs({ bootnode: 'enode://bcdefg@1.2.3.7:30301', network_id: 12345 });
 
     expect(Boot.fs.writeFile).calledWith(
       '/qdata/args.txt',
@@ -138,6 +142,7 @@ describe('writeCommandLineArgs()', () => {
     .listen('/qdata/constellation/tm.ipc');
 
     let bootstrapper = new Boot();
+    sinon.stub(bootstrapper, 'copyKeyMaterials').resolves();
     let _config = await bootstrapper.checkDependencies();
     expect(_config.bootnode).to.equal('enode://abcdef@1.2.3.4:30301');
     expect(_config.network_id).to.equal(34567);
@@ -160,7 +165,10 @@ describe('writeCommandLineArgs()', () => {
 
     sinon.stub(Boot.fs, 'writeFile');
 
-    new Boot().writeCommandLineArgs({ bootnode: 'enode://bcdefg@1.2.3.7:30301', network_id: 12345 });
+    let bootstrapper = new Boot();
+    sinon.stub(bootstrapper, 'copyKeyMaterials').resolves();
+
+    bootstrapper.writeCommandLineArgs({ bootnode: 'enode://bcdefg@1.2.3.7:30301', network_id: 12345 });
 
     expect(Boot.fs.writeFile.getCall(0).args[0]).to.equal('/qdata/args.txt');
     expect(Boot.fs.writeFile.getCall(0).args[1]).to.equal(
@@ -186,7 +194,9 @@ describe('writeCommandLineArgs()', () => {
 
     sinon.stub(Boot.fs, 'writeFile');
 
-    new Boot().writeCommandLineArgs({ bootnode: 'enode://bcdefg@1.2.3.7:30301', network_id: 12345, raft_id: '5' });
+    let bootstrapper = new Boot();
+    sinon.stub(bootstrapper, 'copyKeyMaterials').resolves();
+    bootstrapper.writeCommandLineArgs({ bootnode: 'enode://bcdefg@1.2.3.7:30301', network_id: 12345, raft_id: '5' });
 
     expect(Boot.fs.writeFile.getCall(0).args[0]).to.equal('/qdata/args.txt');
     expect(Boot.fs.writeFile.getCall(0).args[1]).to.equal(

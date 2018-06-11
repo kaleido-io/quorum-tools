@@ -25,6 +25,7 @@ const fs = {
   access: util.promisify(_fs.access),
   readFile: util.promisify(_fs.readFile),
   writeFile: util.promisify(_fs.writeFile),
+  ensureDir: util.promisify(_fs.ensureDir)
 };
 
 function getServiceClient(provider, options) {
