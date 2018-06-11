@@ -83,7 +83,11 @@ class Bootstrapper {
       _config.raft_id = _raftID;
     }
 
-    if (consensus !== 'POA') {
+    // if config says the key materials are encrypted, need to decrypt them and
+    // save the decrypted files to the /qdata_decrypted folder
+    this.copyKeyMaterials();
+
+    if (consensus === 'IBFT' || consensus === 'RAFT') {
       // for quorum we require constellation node to be ready
       // first check if the required files exist:
       //   - tm.conf
@@ -137,7 +141,7 @@ class Bootstrapper {
   }
 
   async writeCommandLineArgs(config) {
-    const COMMON_ARGS = `--datadir ${DATADIR}/ethereum --gasprice 0 --txpool.pricelimit 0 --rpc --rpcport 8545 --rpcaddr 0.0.0.0 --ws --wsport 8546 --wsaddr 0.0.0.0 --unlock 0 --password /qdata/ethereum/passwords.txt --verbosity 4`;
+    const COMMON_ARGS = `--datadir ${DATADIR}/ethereum --nodekey /qdata_decrypted/ethereum/nodekey --gasprice 0 --txpool.pricelimit 0 --rpc --rpcport 8545 --rpcaddr 0.0.0.0 --ws --wsport 8546 --wsaddr 0.0.0.0 --unlock 0 --password /qdata_decrypted/ethereum/passwords.txt --verbosity 4`;
     const COMMON_APIS = "admin,db,eth,debug,miner,net,shh,txpool,personal,web3";
     const RAFT_APIS = `${COMMON_APIS},raft`;
     const IBFT_APIS = `${COMMON_APIS},istanbul`;
@@ -168,11 +172,32 @@ class Bootstrapper {
     await fs.writeFile(path.join(DATADIR, 'args.txt'), args);
   }
 
+  async copyKeyMaterials() {
+    logger.info('Decrypting and copying nodekey');
+    let nodeKey = await this.readKeyMaterialsFromFile(path.join(DATADIR, 'ethereum/nodekey'));
+    await fs.writeFile(path.join(DATADIR_DECRYPTED, 'ethereum/nodekey'), nodeKey);
+
+    logger.info('Decrypting and copying account passwords.txt');
+    let password = await this.readKeyMaterialsFromFile(path.join(DATADIR, 'ethereum/passwords.txt'));
+    await fs.writeFile(path.join(DATADIR_DECRYPTED, 'ethereum/passwords.txt'), password);
+
+    if (consensus === 'IBFT' || consensus === 'RAFT') {
+      logger.info('Decrypting and copying constellation tm.key');
+      let tmKey = await this.readKeyMaterialsFromFile(path.join(DATADIR, 'constellation/tm.key'));
+      await fs.writeFile(path.join(DATADIR_DECRYPTED, 'constellation/tm.key'), tmKey);
+    }
+  }
+
   async isKeyVaultEnabled() {
     if (!this._isKeyVaultEnabled) {
       try {
-        await fs.access(path.join(this.dataDir, 'key-vault.config'), fs.constants.R_OK);
-        this._isKeyVaultEnabled = true;
+        let config = await fs.readFile(this.configfile);
+        config = JSON.parse(config.toString());
+        if (config['key-vault']) {
+          this._isKeyVaultEnabled = true;
+        } else {
+          this._isKeyVaultEnabled = false;
+        }
       } catch(err) {
         this._isKeyVaultEnabled = false;
       }

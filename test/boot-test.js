@@ -100,8 +100,8 @@ describe('writeCommandLineArgs()', () => {
 
     expect(Boot.fs.writeFile).calledWith(
       '/qdata/args.txt',
-      '--datadir /qdata/ethereum --gasprice 0 --txpool.pricelimit 0 --rpc ' +
-      '--rpcport 8545 --rpcaddr 0.0.0.0 --ws --wsport 8546 --wsaddr 0.0.0.0 --unlock 0 --password /qdata/ethereum/passwords.txt ' +
+      '--datadir /qdata/ethereum --nodekey /qdata_decrypted/ethereum/nodekey --gasprice 0 --txpool.pricelimit 0 --rpc ' +
+      '--rpcport 8545 --rpcaddr 0.0.0.0 --ws --wsport 8546 --wsaddr 0.0.0.0 --unlock 0 --password /qdata_decrypted/ethereum/passwords.txt ' +
       '--verbosity 4 --bootnodes enode://bcdefg@1.2.3.7:30301 --permissioned --syncmode full --mine --rpcapi admin,db,eth,debug,miner,net,shh,txpool,personal,web3,istanbul ' +
       '--wsapi admin,db,eth,debug,miner,net,shh,txpool,personal,web3,istanbul --istanbul.blockperiod 5 --istanbul.requesttimeout 15 ' +
       '--wsorigins=* --txpool.globalslots=128 --txpool.globalqueue 32 --cache=64 --trie-cache-gens 128 --networkid 12345'
@@ -164,8 +164,8 @@ describe('writeCommandLineArgs()', () => {
 
     expect(Boot.fs.writeFile.getCall(0).args[0]).to.equal('/qdata/args.txt');
     expect(Boot.fs.writeFile.getCall(0).args[1]).to.equal(
-      '--datadir /qdata/ethereum --gasprice 0 --txpool.pricelimit 0 --rpc ' +
-      '--rpcport 8545 --rpcaddr 0.0.0.0 --ws --wsport 8546 --wsaddr 0.0.0.0 --unlock 0 --password /qdata/ethereum/passwords.txt ' +
+      '--datadir /qdata/ethereum --nodekey /qdata_decrypted/ethereum/nodekey --gasprice 0 --txpool.pricelimit 0 --rpc ' +
+      '--rpcport 8545 --rpcaddr 0.0.0.0 --ws --wsport 8546 --wsaddr 0.0.0.0 --unlock 0 --password /qdata_decrypted/ethereum/passwords.txt ' +
       '--verbosity 4 --bootnodes enode://bcdefg@1.2.3.7:30301 --permissioned --raft --rpcapi admin,db,eth,debug,miner,net,shh,txpool,personal,web3,raft ' +
       '--wsapi admin,db,eth,debug,miner,net,shh,txpool,personal,web3,raft ' +
       '--wsorigins=* --txpool.globalslots=128 --txpool.globalqueue 32 --cache=64 --trie-cache-gens 128 --networkid 12345');
@@ -190,8 +190,8 @@ describe('writeCommandLineArgs()', () => {
 
     expect(Boot.fs.writeFile.getCall(0).args[0]).to.equal('/qdata/args.txt');
     expect(Boot.fs.writeFile.getCall(0).args[1]).to.equal(
-      '--datadir /qdata/ethereum --gasprice 0 --txpool.pricelimit 0 --rpc ' +
-      '--rpcport 8545 --rpcaddr 0.0.0.0 --ws --wsport 8546 --wsaddr 0.0.0.0 --unlock 0 --password /qdata/ethereum/passwords.txt ' +
+      '--datadir /qdata/ethereum --nodekey /qdata_decrypted/ethereum/nodekey --gasprice 0 --txpool.pricelimit 0 --rpc ' +
+      '--rpcport 8545 --rpcaddr 0.0.0.0 --ws --wsport 8546 --wsaddr 0.0.0.0 --unlock 0 --password /qdata_decrypted/ethereum/passwords.txt ' +
       '--verbosity 4 --bootnodes enode://bcdefg@1.2.3.7:30301 --permissioned --raft --rpcapi admin,db,eth,debug,miner,net,shh,txpool,personal,web3,raft ' +
       '--wsapi admin,db,eth,debug,miner,net,shh,txpool,personal,web3,raft --raftjoinexisting 5 ' +
       '--wsorigins=* --txpool.globalslots=4096 --txpool.globalqueue 1024 --cache=128 --trie-cache-gens 120 --networkid 12345');
