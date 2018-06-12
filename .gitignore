@@ -3,3 +3,4 @@ boot/node_modules
 boot/package-lock.json
 test/node_modules
 test/package-lock.json
+test/coverage

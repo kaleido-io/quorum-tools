@@ -1,5 +1,5 @@
 {
-  "name": "nodebootstrapper",
+  "name": "@photic/nodebootstrapper",
   "version": "1.0.0",
   "description": "Bootstrapper for Geth and Quorum nodes",
   "main": "index.js",
