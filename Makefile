@@ -47,7 +47,7 @@ endif
 
 	# build the "constellation" docker image
 	@echo "Building docker image for constellation"
-	docker build -t $(DOCKER_NS)/constellation -f constellation/Dockerfile .
+	docker build -t $(DOCKER_NS)/constellation -f constellation/Dockerfile ..
 
 istanbul-tools:
 	@echo "Building docker image for istanbul-tools"
