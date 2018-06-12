@@ -32,7 +32,7 @@ describe('writeCommandLineArgs()', () => {
 
   it('handles non-existing boot.config', async () => {
     const Boot = require('../boot/lib/boot.js');
-    sinon.stub(Boot.fs, 'readFile').withArgs('/qdata/ethereum/boot.config').rejects();
+    sinon.stub(Boot.fs, 'readFile').withArgs('/qdata/boot.config').rejects();
 
     let bootstrapper = new Boot();
     sinon.stub(bootstrapper, 'copyKeyMaterials').resolves();
@@ -56,7 +56,7 @@ describe('writeCommandLineArgs()', () => {
       network_id: 12345
     };
 
-    sinon.stub(Boot.fs, 'readFile').withArgs('/qdata/ethereum/boot.config').resolves(Buffer.from(JSON.stringify(config)));
+    sinon.stub(Boot.fs, 'readFile').withArgs('/qdata/boot.config').resolves(Buffer.from(JSON.stringify(config)));
     sinon.stub(Boot.fs, 'access').resolves();
 
     fs.removeSync('/qdata/constellation/tm.ipc');
@@ -127,7 +127,7 @@ describe('writeCommandLineArgs()', () => {
       network_id: 34567
     };
 
-    sinon.stub(Boot.fs, 'readFile').withArgs('/qdata/ethereum/boot.config').resolves(Buffer.from(JSON.stringify(config)));
+    sinon.stub(Boot.fs, 'readFile').withArgs('/qdata/boot.config').resolves(Buffer.from(JSON.stringify(config)));
     sinon.stub(Boot.fs, 'access').resolves();
 
     fs.removeSync('/qdata/constellation/tm.ipc');

@@ -26,7 +26,7 @@ const argv = require('yargs').argv;
 const DATADIR = '/qdata';
 const DATADIR_DECRYPTED = '/qdata_decrypted';
 
-const BOOT_CONFIG = 'ethereum/boot.config';
+const BOOT_CONFIG = 'boot.config';
 const TMCONF = 'constellation/tm.conf';
 
 const constellation = argv.constellation;
