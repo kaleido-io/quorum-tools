@@ -29,6 +29,8 @@ const DATADIR_DECRYPTED = '/qdata_decrypted';
 const BOOT_CONFIG = 'ethereum/boot.config';
 const TMCONF = 'constellation/tm.conf';
 
+const constellation = argv.constellation;
+
 const poa = argv.poa;
 const ibft = argv.ibft;
 const raftInit = argv.raftInit;
@@ -62,85 +64,108 @@ class Bootstrapper {
 
     config = JSON.parse(data.toString());
 
-    let _bootnode = bootnode || config.bootnode;
-    if (!_bootnode) return false;
-    logger.info(`bootnode: ${_bootnode}`);
-
-    let _networkID = networkID || config.network_id;
-    if (!_networkID) return false;
-    logger.info(`networkid: ${_networkID}`);
-
-    let _config = {
-      bootnode: _bootnode,
-      network_id: _networkID
-    };
-
-    let _raftID = raftID || config.raft_id;
-    if (consensus === 'RAFT' && !raftInit) {
-      // require raftID is not IBFT and not initial RAFT node
-      if (!_raftID) return false;
-      logger.info(`raftID: ${_raftID}`);
-      _config.raft_id = _raftID;
-    }
-
-    // if config says the key materials are encrypted, need to decrypt them and
-    // save the decrypted files to the /qdata_decrypted folder
-    await this.copyKeyMaterials();
-
-    if (consensus === 'IBFT' || consensus === 'RAFT') {
-      // for quorum we require constellation node to be ready
-      // first check if the required files exist:
-      //   - tm.conf
-      //   - tm.ipc
+    if (constellation) {
+      // used in Quorum Constellation startup
       let tmConf = path.join(DATADIR, TMCONF);
-      let tmIPC = path.join(DATADIR, 'constellation/tm.ipc');
       try {
         await fs.access(tmConf, fs.constants.R_OK);
+  
+        // if config says the key materials are encrypted, need to decrypt them and
+        // save the decrypted files to the /qdata_decrypted folder
+        await this.copyKeyMaterials();
+  
+        return true;
       } catch(err) {
         logger.info(`Missing constellation config file: ${tmConf}`);
         return false;
       }
+    } else {
+      // used in Geth or Quorum startup
+      let _bootnode = bootnode || config.bootnode;
+      if (!_bootnode) return false;
+      logger.info(`bootnode: ${_bootnode}`);
 
-      try {
-        await fs.access(tmIPC, fs.constants.R_OK);
-      } catch(err) {
-        logger.info(`Missing IPC to constellation: ${tmIPC}`);
-        return false;
+      let _networkID = networkID || config.network_id;
+      if (!_networkID) return false;
+      logger.info(`networkid: ${_networkID}`);
+
+      let _config = {
+        bootnode: _bootnode,
+        network_id: _networkID
+      };
+
+      let _raftID = raftID || config.raft_id;
+      if (consensus === 'RAFT' && !raftInit) {
+        // require raftID is not IBFT and not initial RAFT node
+        if (!_raftID) return false;
+        logger.info(`raftID: ${_raftID}`);
+        _config.raft_id = _raftID;
       }
 
-      logger.info('Checking if constellation is ready');
-      return new Promise((resolve, reject) => {
-        let client = net.createConnection({path: tmIPC})
-          .on('connect', () => {
-            logger.info(`\tConnected via ${tmIPC}`);
-          })
-          .on('data', (data) => {
-            data = data.toString();
-            if (data.indexOf("I'm up!") < 0) {
+      // if config says the key materials are encrypted, need to decrypt them and
+      // save the decrypted files to the /qdata_decrypted folder
+      await this.copyKeyMaterials();
+
+      if (consensus === 'IBFT' || consensus === 'RAFT') {
+        // for quorum we require constellation node to be ready
+        // first check if the required files exist:
+        //   - tm.conf
+        //   - tm.ipc
+        let tmConf = path.join(DATADIR, TMCONF);
+        let tmIPC = path.join(DATADIR, 'constellation/tm.ipc');
+        try {
+          await fs.access(tmConf, fs.constants.R_OK);
+        } catch(err) {
+          logger.info(`Missing constellation config file: ${tmConf}`);
+          return false;
+        }
+
+        try {
+          await fs.access(tmIPC, fs.constants.R_OK);
+        } catch(err) {
+          logger.info(`Missing IPC to constellation: ${tmIPC}`);
+          return false;
+        }
+
+        logger.info('Checking if constellation is ready');
+        return new Promise((resolve, reject) => {
+          let client = net.createConnection({path: tmIPC})
+            .on('connect', () => {
+              logger.info(`\tConnected via ${tmIPC}`);
+            })
+            .on('data', (data) => {
+              data = data.toString();
+              if (data.indexOf("I'm up!") < 0) {
+                logger.info(`\t${data}`);
+                client.end();
+                return resolve(false);
+              }
+
               logger.info(`\t${data}`);
               client.end();
+              return resolve(_config);
+            })
+            .on('error', (err) => {
+              logger.info(`\t${err}`);
+              client.end();
               return resolve(false);
-            }
+            });
 
-            logger.info(`\t${data}`);
-            client.end();
-            return resolve(_config);
-          })
-          .on('error', (err) => {
-            logger.info(`\t${err}`);
-            client.end();
-            return resolve(false);
-          });
-
-        client.write('GET http://c/upcheck HTTP/1.1\r\n');
-        client.write('\r\n');
-      });
-    } else {
-      return Promise.resolve(_config);
+          client.write('GET http://c/upcheck HTTP/1.1\r\n');
+          client.write('\r\n');
+        });
+      } else {
+        return Promise.resolve(_config);
+      }
     }
   }
 
   async writeCommandLineArgs(config) {
+    if (constellation) {
+      // no special args for constellation launch
+      return;
+    }
+
     const COMMON_ARGS = `--datadir ${DATADIR}/ethereum --nodekey /qdata_decrypted/ethereum/nodekey --gasprice 0 --txpool.pricelimit 0 --rpc --rpcport 8545 --rpcaddr 0.0.0.0 --ws --wsport 8546 --wsaddr 0.0.0.0 --unlock 0 --password /qdata_decrypted/ethereum/passwords.txt --verbosity 4`;
     const COMMON_APIS = "admin,db,eth,debug,miner,net,shh,txpool,personal,web3";
     const RAFT_APIS = `${COMMON_APIS},raft`;
@@ -173,21 +198,21 @@ class Bootstrapper {
   }
 
   async copyKeyMaterials() {
-    logger.info('Decrypting and copying nodekey');
-    await fs.ensureDir(path.join(DATADIR_DECRYPTED, 'ethereum'));
-
-    let nodeKey = await this.readKeyMaterialsFromFile(path.join(DATADIR, 'ethereum/nodekey'));
-    await fs.writeFile(path.join(DATADIR_DECRYPTED, 'ethereum/nodekey'), nodeKey);
-
-    logger.info('Decrypting and copying account passwords.txt');
-    let password = await this.readKeyMaterialsFromFile(path.join(DATADIR, 'ethereum/passwords.txt'));
-    await fs.writeFile(path.join(DATADIR_DECRYPTED, 'ethereum/passwords.txt'), password);
-
-    if (consensus === 'IBFT' || consensus === 'RAFT') {
+    if (constellation) {
       logger.info('Decrypting and copying constellation tm.key');
       await fs.ensureDir(path.join(DATADIR_DECRYPTED, 'constellation'));
       let tmKey = await this.readKeyMaterialsFromFile(path.join(DATADIR, 'constellation/tm.key'));
       await fs.writeFile(path.join(DATADIR_DECRYPTED, 'constellation/tm.key'), tmKey);
+    } else {
+      logger.info('Decrypting and copying nodekey');
+      await fs.ensureDir(path.join(DATADIR_DECRYPTED, 'ethereum'));
+
+      let nodeKey = await this.readKeyMaterialsFromFile(path.join(DATADIR, 'ethereum/nodekey'));
+      await fs.writeFile(path.join(DATADIR_DECRYPTED, 'ethereum/nodekey'), nodeKey);
+
+      logger.info('Decrypting and copying account passwords.txt');
+      let password = await this.readKeyMaterialsFromFile(path.join(DATADIR, 'ethereum/passwords.txt'));
+      await fs.writeFile(path.join(DATADIR_DECRYPTED, 'ethereum/passwords.txt'), password);
     }
   }
 

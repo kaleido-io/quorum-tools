@@ -7,17 +7,10 @@
 set -u
 set -e
 
+node /usr/local/src/index.js --constellation
+
 ### Configuration Options
 TMCONF=/qdata/constellation/tm.conf
-
-#
-# we cannot start until tm.conf is available
-#
-echo "[*] TMCONF=$TMCONF"
-while [ ! -f $TMCONF ]
-do
-  sleep 2
-done
 
 echo "[*] Starting Constellation node"
 nohup constellation-node $TMCONF -v3 2>>/qdata/logs/constellation.log
