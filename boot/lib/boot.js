@@ -238,7 +238,7 @@ class Bootstrapper {
     let isKeyVaultEnabled = await this.isKeyVaultEnabled();
 
     if (isKeyVaultEnabled) {
-      let config = await fs.readFile();
+      let config = await fs.readFile(this.configfile);
       let options = JSON.parse(config.toString());
       let encryptedFile = new EncryptedFile(path, options);
       return await encryptedFile.read();
