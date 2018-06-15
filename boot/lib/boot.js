@@ -25,8 +25,10 @@ const argv = require('yargs').argv;
 
 const DATADIR = '/qdata';
 const DATADIR_DECRYPTED = '/qdata_decrypted';
+const CONFIGDIR = '/qdata_config';
 
 const BOOT_CONFIG = 'boot.config';
+const KV_CONFIG = 'key-vault-config.json';
 const TMCONF = 'constellation/tm.conf';
 
 const constellation = argv.constellation;
@@ -50,6 +52,7 @@ const trieCacheGens = process.env[`PERF_${consensus}_TRIE_CACHE_GENS`] || 120;
 class Bootstrapper {
   constructor() {
     this.configfile = path.join(DATADIR, BOOT_CONFIG);
+    this.kvconfigfile = path.join(CONFIGDIR, KV_CONFIG);
   }
 
   async checkDependencies() {
@@ -220,9 +223,9 @@ class Bootstrapper {
   async isKeyVaultEnabled() {
     if (!this._isKeyVaultEnabled) {
       try {
-        let config = await fs.readFile(this.configfile);
+        let config = await fs.readFile(this.kvconfigfile);
         config = JSON.parse(config.toString());
-        if (config['key-vault']) {
+        if (config.provider) {
           this._isKeyVaultEnabled = true;
         } else {
           this._isKeyVaultEnabled = false;
@@ -239,7 +242,7 @@ class Bootstrapper {
     let isKeyVaultEnabled = await this.isKeyVaultEnabled();
 
     if (isKeyVaultEnabled) {
-      let config = await fs.readFile(this.configfile);
+      let config = await fs.readFile(this.kvconfigfile);
       let options = JSON.parse(config.toString());
       let encryptedFile = new EncryptedFile(path, options);
       return await encryptedFile.read();
