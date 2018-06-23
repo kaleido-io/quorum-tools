@@ -15,6 +15,8 @@
 'use strict';
 
 const AWS = require('aws-sdk');
+const AWS_KMS_VERSION = '2014-11-01';
+
 const Logging = require('log4js');
 const logger = Logging.getLogger('lib/encrypted-file.js');
 logger.level = 'info';
@@ -32,13 +34,12 @@ function getServiceClient(provider, options) {
   if (provider == 'aws') {
     logger.info('Provder is AWS. Configuration details: ', options);
 
-    AWS.config.region = options.region;
-    AWS.config.credentials = new AWS.Credentials({
+    return new AWS.KMS({
+      apiVersion: AWS_KMS_VERSION,
+      region: options.region,
       accessKeyId: options.apiKey,
       secretAccessKey: options.apiSecret
     });
-
-    return new AWS.KMS();
   } else {
     throw new Error('Unsupported key vault provider: ' + provider);
   }
