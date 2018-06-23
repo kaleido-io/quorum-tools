@@ -37,8 +37,8 @@ function getServiceClient(provider, options) {
     return new AWS.KMS({
       apiVersion: AWS_KMS_VERSION,
       region: options.region,
-      accessKeyId: options.apiKey,
-      secretAccessKey: options.apiSecret
+      accessKeyId: options['api-key'],
+      secretAccessKey: options['api-secret']
     });
   } else {
     throw new Error('Unsupported key vault provider: ' + provider);
@@ -65,16 +65,16 @@ class KeyVaultEncryptedFile {
    * @param {object} options An object that must contain the following:
    *   provider: "aws" (or "azure" etc. later on), optional. default: "aws"
    *   region: region value specific to the cloud provider
-   *   apiKey: For AWS this maps to AWS_ACCESS_KEY_ID
-   *   apiSecret: For AWS this maps to AWS_SECRET_ACCESS_KEY
-   *   keyId: optional, the user can created an alias "kaleido" for their CMK and we'll default to that, otherwise a value can be provided
+   *   api-key: For AWS this maps to AWS_ACCESS_KEY_ID
+   *   api-secret: For AWS this maps to AWS_SECRET_ACCESS_KEY
+   *   key-id: optional, the user can created an alias "kaleido" for their CMK and we'll default to that, otherwise a value can be provided
    */
   constructor(filepath, options) {
-    logger.info('filepath: ', filepath, ', CMK: ', options.keyId);
+    logger.info('filepath: ', filepath, ', CMK: ', options['key-id']);
 
     this.filepath = filepath;
     this.client = getServiceClient(options.provider, options);
-    this.masterKeyId = options.keyId ? options.keyId : 'alias/kaleido';
+    this.masterKeyId = options['key-id'] ? options['key-id'] : 'alias/kaleido';
   }
 
   write(plainTextData) {

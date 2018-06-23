@@ -29,21 +29,21 @@ const plaintext = 'dummy password';
 
 describe('constructor tests', () => {
   it('should return an instance with the right properties using default', () => {
-    let test = new EncryptedFile('/qdata/ethereum/nodekey', {provider: 'aws', region: 'us-east-2', apiKey: 'abc', apiSecret: 'def'});
+    let test = new EncryptedFile('/qdata/ethereum/nodekey', {provider: 'aws', region: 'us-east-2', 'api-key': 'abc', 'api-secret': 'def'});
     expect(test.filepath).to.equal('/qdata/ethereum/nodekey');
     expect(test.client.endpoint.href).to.equal('https://kms.us-east-2.amazonaws.com/');
     expect(test.masterKeyId).to.equal('alias/kaleido');
   });
 
   it('should return an instance with the right properties with explicit key ID', () => {
-    let test = new EncryptedFile('/qdata/ethereum/nodekey', {provider: 'aws', region: 'us-east-2', apiKey: 'abc', apiSecret: 'def', keyId: '12345-very-long-keyId'});
+    let test = new EncryptedFile('/qdata/ethereum/nodekey', {provider: 'aws', region: 'us-east-2', 'api-key': 'abc', 'api-secret': 'def', 'key-id': '12345-very-long-keyId'});
     expect(test.filepath).to.equal('/qdata/ethereum/nodekey');
     expect(test.masterKeyId).to.equal('12345-very-long-keyId');
   });
 
   it('should throw an error due to bad provider value', () => {
     expect(() => {
-      new EncryptedFile('/qdata/ethereum/nodekey', {provider: 'azure', region: 'us-east-2', apiKey: 'abc', apiSecret: 'def', keyId: '12345-very-long-keyId'});
+      new EncryptedFile('/qdata/ethereum/nodekey', {provider: 'azure', region: 'us-east-2', 'api-key': 'abc', 'api-secret': 'def', 'key-id': '12345-very-long-keyId'});
     }).to.throw(/Unsupported key vault provider/);
   });
 });
@@ -67,7 +67,7 @@ describe('write()', () => {
         "KeyId": "arn:aws:kms:us-east-2:160018404805:key/47445fd1-5ea6-4e30-9b44-8a1aad9bd39f"
       });
 
-    let test = new EncryptedFile('/qdata/ethereum/nodekey', {provider: 'aws', region: 'us-east-2', apiKey: 'abc', apiSecret: 'def'});
+    let test = new EncryptedFile('/qdata/ethereum/nodekey', {provider: 'aws', region: 'us-east-2', 'api-key': 'abc', 'api-secret': 'def'});
 
     await test.write(plaintext);
     expect(stub.getCall(0).args[0]).to.equal('/qdata/ethereum/nodekey');
@@ -79,7 +79,7 @@ describe('write()', () => {
       .post('/')
       .reply(400, {"__type":"UnrecognizedClientException","message":"The security token included in the request is invalid."});
 
-    let test = new EncryptedFile('/qdata/ethereum/nodekey', {provider: 'aws', region: 'us-east-2', apiKey: 'abc', apiSecret: 'def'});
+    let test = new EncryptedFile('/qdata/ethereum/nodekey', {provider: 'aws', region: 'us-east-2', 'api-key': 'abc', 'api-secret': 'def'});
 
     try {
       await test.write(plaintext);
@@ -108,7 +108,7 @@ describe('read() calls readFile() to get cipher text and returns plain text afte
         "KeyId": "arn:aws:kms:us-east-2:160018404805:key/47445fd1-5ea6-4e30-9b44-8a1aad9bd39f"
       });
 
-    let test = new EncryptedFile('/qdata/ethereum/nodekey', {provider: 'aws', region: 'us-east-2', apiKey: 'abc', apiSecret: 'def'});
+    let test = new EncryptedFile('/qdata/ethereum/nodekey', {provider: 'aws', region: 'us-east-2', 'api-key': 'abc', 'api-secret': 'def'});
     let decrypted = await test.read();
     expect(decrypted).to.deep.equal(Buffer.from(plaintext));
   });
@@ -118,7 +118,7 @@ describe('read() calls readFile() to get cipher text and returns plain text afte
       .post('/')
       .reply(400, {"__type":"UnrecognizedClientException","message":"The security token included in the request is invalid."});
 
-    let test = new EncryptedFile('/qdata/ethereum/nodekey', {provider: 'aws', region: 'us-east-2', apiKey: 'abc', apiSecret: 'def'});
+    let test = new EncryptedFile('/qdata/ethereum/nodekey', {provider: 'aws', region: 'us-east-2', 'api-key': 'abc', 'api-secret': 'def'});
 
     try {
       await test.read();
