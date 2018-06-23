@@ -83,6 +83,7 @@ class KeyVaultEncryptedFile {
         Plaintext: plainTextData
       }, async (err, data) => {
         if (err) {
+          logger.error('Failed to encrypt data with KMS.', err);
           reject(err);
         } else {
           await fs.writeFile(this.filepath, data.CiphertextBlob);
@@ -99,6 +100,7 @@ class KeyVaultEncryptedFile {
         CiphertextBlob: encrypted
       }, (err, data) => {
         if (err) {
+          logger.error('Failed to decrypt data with KMS.', err);
           reject(err);
         } else {
           return resolve(data.Plaintext);
