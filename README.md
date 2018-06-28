@@ -9,8 +9,8 @@ This tests the setup to have Quorum (based on go-ethereum) and Constellation to 
 This repository depends on the following repositories to be cloned and reside next to it:
 ```
 git clone git@github.com:kaleido-io/quorum-tools.git
-git clone git@github.com:jpmorganchase/quorum.git
-git clone git@github.com:jpmorganchase/constellation.git
+git clone git@github.com:jimthematrix/quorum.git
+git clone git@github.com:jimthematrix/constellation.git
 git clone git@github.com:getamis/istanbul-tools.git
 ```
 
@@ -35,7 +35,7 @@ from the project root. It should produce the following docker images:
 ## Generate configuration artifacts and docker-compose.yaml
 
 ```
-cd test
+cd examples
 ./setup.sh
 ```
 
@@ -70,6 +70,8 @@ This makes it trivial to launch the network
 Refer to the *setup.sh* file itself for the full code.
 
 ## Launch the network
+
+run the command below from the `examples` directory
 
 ```
 docker-compose -f tmp/docker-compose.yaml up
