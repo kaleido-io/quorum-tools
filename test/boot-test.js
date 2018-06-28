@@ -104,7 +104,7 @@ describe('writeCommandLineArgs()', () => {
 
     expect(Boot.fs.writeFile).calledWith(
       '/qdata/args.txt',
-      '--datadir /qdata/ethereum --nodekey /qdata_decrypted/ethereum/nodekey --gasprice 0 --txpool.pricelimit 0 --rpc ' +
+      '--datadir /qdata/ethereum --nodekey /qdata_decrypted/ethereum/nodekey --targetgaslimit 804247552 --gasprice 0 --txpool.pricelimit 0 --rpc ' +
       '--rpcport 8545 --rpcaddr 0.0.0.0 --ws --wsport 8546 --wsaddr 0.0.0.0 --unlock 0 --password /qdata_decrypted/ethereum/passwords.txt ' +
       '--verbosity 4 --bootnodes enode://bcdefg@1.2.3.7:30301 --permissioned --syncmode full --mine --rpcapi admin,db,eth,debug,miner,net,shh,txpool,personal,web3,istanbul ' +
       '--wsapi admin,db,eth,debug,miner,net,shh,txpool,personal,web3,istanbul --istanbul.blockperiod 5 --istanbul.requesttimeout 15 ' +
