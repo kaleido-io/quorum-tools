@@ -34,4 +34,5 @@ if [ ! -d /qdata/ethereum/geth/chaindata ]; then
 fi
 
 echo "[*] Starting node with args $GETH_ARGS"
-PRIVATE_CONFIG=/qdata/constellation/tm.conf nohup geth $GETH_ARGS 2>>/qdata/logs/geth.log
+export PRIVATE_CONFIG=/qdata/constellation/tm.conf
+nohup sh -c "geth $GETH_ARGS" 2>>/qdata/logs/geth.log
