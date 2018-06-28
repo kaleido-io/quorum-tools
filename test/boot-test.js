@@ -108,7 +108,7 @@ describe('writeCommandLineArgs()', () => {
       '--rpcport 8545 --rpcaddr 0.0.0.0 --ws --wsport 8546 --wsaddr 0.0.0.0 --unlock 0 --password /qdata_decrypted/ethereum/passwords.txt ' +
       '--verbosity 4 --bootnodes enode://bcdefg@1.2.3.7:30301 --permissioned --syncmode full --mine --rpcapi admin,db,eth,debug,miner,net,shh,txpool,personal,web3,istanbul ' +
       '--wsapi admin,db,eth,debug,miner,net,shh,txpool,personal,web3,istanbul --istanbul.blockperiod 5 --istanbul.requesttimeout 15 ' +
-      '--rpccorsdomain * --wsorigins * --txpool.globalslots 128 --txpool.globalqueue 32 --cache 64 --trie-cache-gens 128 --networkid 12345'
+      '--rpccorsdomain \'*\' --wsorigins \'*\' --txpool.globalslots 128 --txpool.globalqueue 32 --cache 64 --trie-cache-gens 128 --networkid 12345'
     );
 
     Boot.fs.writeFile.restore();

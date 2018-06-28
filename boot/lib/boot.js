@@ -197,7 +197,7 @@ class Bootstrapper {
       }
     }
 
-    args = `${args} --rpccorsdomain ${rpcOrigins} --wsorigins ${wsOrigins} --txpool.globalslots ${txpoolSize} --txpool.globalqueue ${txpoolSize / 4} --cache ${dbCache} --trie-cache-gens ${trieCacheGens} --networkid ${config.network_id}`;
+    args = `${args} --rpccorsdomain '${rpcOrigins}' --wsorigins '${wsOrigins}' --txpool.globalslots ${txpoolSize} --txpool.globalqueue ${txpoolSize / 4} --cache ${dbCache} --trie-cache-gens ${trieCacheGens} --networkid ${config.network_id}`;
     await fs.writeFile(path.join(DATADIR, 'args.txt'), args);
   }
 
