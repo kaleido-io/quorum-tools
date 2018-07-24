@@ -43,4 +43,8 @@ check()
 .then(async (config) => {
   logger.info(util.format('Configurations: %j', config));
   await bootstrapper.writeCommandLineArgs(config);
+})
+.catch(err => {
+  logger.error("Bootstrap failed", err)
+  process.exit(1);
 });

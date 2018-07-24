@@ -22,6 +22,8 @@
 ### cluster, and enters a sleep loop until a file "boot.config" with "raft_id" is found.
 ###
 
+set -e
+
 node /usr/local/src/index.js $@
 GETH_ARGS=`cat /qdata/args.txt`
 
