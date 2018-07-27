@@ -13,5 +13,5 @@ node /usr/local/src/index.js --constellation
 TMCONF=/qdata/constellation/tm.conf
 
 echo "[*] Starting Constellation node"
-nohup constellation-node $TMCONF -v3 2>>/qdata/logs/constellation.log
+exec nohup constellation-node $TMCONF -v3 2>>/qdata/logs/constellation.log
 
