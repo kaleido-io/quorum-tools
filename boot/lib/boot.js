@@ -45,7 +45,10 @@ const roundChangeTimer = argv.roundchangetimer;
 const rpcOrigins = argv.rpcOrigins || "*";
 const wsOrigins = argv.wsOrigins || "*";
 const consensus = (poa) ? 'POA' : ((ibft) ? 'IBFT' : 'RAFT');
-const txpoolSize = process.env[`PERF_${consensus}_TXPOOL_SIZE`] || 4096; // default value in Geth 1.7+
+const txpoolExecutableSize = process.env[`PERF_${consensus}_TXPOOL_SIZE`] || 4096; // default value in Geth 1.7+
+const txpoolExecutablePerAccountSize = process.env[`PERF_${consensus}_TXPOOL_PER_ACCOUNT_SIZE`] || 16; // default value in Geth 1.7+
+const txpoolNonExecutableSize = process.env[`PERF_${consensus}_TXPOOL_NON_EXEC_SIZE`] || (txpoolExecutableSize / 4); // default value in Geth 1.7+
+const txpoolNonExecutablePerAccountSize = process.env[`PERF_${consensus}_TXPOOL_NON_EXEC_PER_ACCOUNT_SIZE`] || 64; // default value in Geth 1.7+
 const dbCache = process.env[`PERF_${consensus}_CACHE`] || 128; // default size in Geth 1.7
 const trieCacheGens = process.env[`PERF_${consensus}_TRIE_CACHE_GENS`] || 120;
 
@@ -197,7 +200,7 @@ class Bootstrapper {
       }
     }
 
-    args = `${args} --rpccorsdomain '${rpcOrigins}' --wsorigins '${wsOrigins}' --txpool.globalslots ${txpoolSize} --txpool.globalqueue ${txpoolSize / 4} --cache ${dbCache} --trie-cache-gens ${trieCacheGens} --networkid ${config.network_id}`;
+    args = `${args} --rpccorsdomain '${rpcOrigins}' --wsorigins '${wsOrigins}' --txpool.globalslots ${txpoolExecutableSize} --txpool.accountslots ${txpoolExecutablePerAccountSize} --txpool.globalqueue ${txpoolNonExecutableSize} --txpool.accountqueue ${txpoolNonExecutablePerAccountSize} --cache ${dbCache} --trie-cache-gens ${trieCacheGens} --networkid ${config.network_id}`;
     await fs.writeFile(path.join(DATADIR, 'args.txt'), args);
   }
 
