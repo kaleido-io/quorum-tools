@@ -37,8 +37,8 @@ fi
 
 echo "[*] Starting node with args $GETH_ARGS"
 export PRIVATE_CONFIG=/qdata/constellation/tm.conf
-geth $GETH_ARGS 2>>/qdata/logs/geth.log &
-pid="$!"
+sh -c "geth $GETH_ARGS 2>>/qdata/logs/geth.log" &
+pid=$!
 # Geth wants SIGINT instead of SIGTERM
 trap "kill -INT $pid" SIGTERM
 # Also just forward the SIGKILL when received.
