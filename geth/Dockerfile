@@ -25,12 +25,12 @@ COPY \
     /usr/local/bin/
 
 COPY \
-        ./quorum-tools/boot/package.json \
-        ./quorum-tools/boot/index.js \
+        ./photic-eth-boot/boot/package.json \
+        ./photic-eth-boot/boot/index.js \
     /usr/local/src/
 
 COPY \
-        ./quorum-tools/boot/lib \
+        ./photic-eth-boot/boot/lib \
     /usr/local/src/lib
 
 RUN cd /usr/local/src && npm install
