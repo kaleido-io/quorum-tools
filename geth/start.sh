@@ -25,16 +25,26 @@
 set -e
 
 node /usr/local/src/index.js $@
-GETH_ARGS=`cat /qdata/args.txt`
+
+CHAIN_RECONFIG_MARKER_FILE="/qdata/ethereum/.chain_reconfigure"
+
+if [ ! -f /qdata/args.txt ]; then
+  echo "!!! FATAL !!! - missing /qdata/args.txt, unable to start geth"
+  exit 1
+fi
+
 
 #
 # ALL SET!
 #
-if [ ! -d /qdata/ethereum/geth/chaindata ]; then
-  echo "[*] Mining Genesis block"
+if [ ! -d /qdata/ethereum/chaindata ] || [ -f $CHAIN_RECONFIG_MARKER_FILE ]; then
+  echo "[*] Setting up chain config & genesis block"
   geth --datadir /qdata/ethereum init /qdata/ethereum/genesis.json
+  # remove the chain reconfig marker file
+  rm -f $CHAIN_RECONFIG_MARKER_FILE
 fi
 
+GETH_ARGS=`cat /qdata/args.txt`
 echo "[*] Starting node with args $GETH_ARGS"
 export PRIVATE_CONFIG=/qdata/constellation/tm.conf
 sh -c "geth $GETH_ARGS 2>>/qdata/logs/geth.log" &
