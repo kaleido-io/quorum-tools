@@ -32,7 +32,7 @@ from the project root. It should produce the following docker images:
 
 `setup.sh` depends upon [jq](https://stedolan.github.io/jq/).  Please ensure this `jq` is installed
 
-## Generate configuration artifacts and docker-compose.yaml
+## Generate configuration artifacts and docker-compose.yml
 
 ```
 cd examples
@@ -64,7 +64,7 @@ The script generates all configuration files for the geth node in the `ethereum`
  * the transaction manager's identity (key pair) in tm.pub and tm.key files
  * the tm.conf file that configures the constellation node for url and listening port, and where other constellation nodes are
 
-4. docker-compose.yaml
+4. docker-compose.yml
 This makes it trivial to launch the network
 
 Refer to the *setup.sh* file itself for the full code.
@@ -74,7 +74,7 @@ Refer to the *setup.sh* file itself for the full code.
 run the command below from the `examples` directory
 
 ```
-docker-compose -f tmp/docker-compose.yaml up
+docker-compose -f tmp/docker-compose.yml up
 ```
 
 ## Advanced Topics
@@ -122,5 +122,3 @@ command: start.sh --bootnode="enode://c3475a286a...6ebc6@172.13.0.100:30301" --i
 ```
 command: start.sh --bootnode="enode://c3475a286a...6ebc6@172.13.0.100:30301" --ibft --blockperiod=5
 ```
-
-

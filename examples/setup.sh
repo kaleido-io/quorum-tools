@@ -188,10 +188,12 @@ EOF
   },
   "coinbase": "0x0000000000000000000000000000000000000000",
   "config": {
-    "chainId": 2018,
     "homesteadBlock": 0,
+    "byzantiumBlock": 0,
+    "eip150Block": 0,
     "eip155Block": 0,
-    "byzantiumBlock": 0
+    "isQuorum":true,
+    "chainId": 3543006677
   },
   "difficulty": "0x0",
   "mixhash": "0x00000000000000000000000000000000000000647572616c65787365646c6578",
