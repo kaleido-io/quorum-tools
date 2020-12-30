@@ -300,7 +300,7 @@ for index in ${!ips[*]}; do
     depends_on:
       - constellation_$n
       - bootnode
-    ipc: container:constellation_$n
+    ipc: service:constellation_$n
 
 EOF
 done
