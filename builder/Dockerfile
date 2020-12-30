@@ -1,4 +1,4 @@
-FROM ubuntu:16.04
+FROM ubuntu:18.04
 
 WORKDIR /work
 
@@ -12,7 +12,6 @@ RUN apt-get update && \
             sysvbanner \
             unzip \
             wget \
-            wrk \
             zlib1g-dev \
             xz-utils
 

@@ -1,4 +1,4 @@
-FROM ubuntu:16.04
+FROM ubuntu:18.04
 
 # Install useful tools for investigating runtime issues
 RUN apt-get update && \

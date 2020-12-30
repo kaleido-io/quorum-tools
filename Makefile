@@ -40,14 +40,14 @@ docker-geth: docker-builder
 
 docker-constellation-base: docker-builder
 	@echo "Building docker image for constellation base"
-	docker build -t $(DOCKER_NS)/constellation-base -f ../constellation/build-ubuntu.dockerfile --build-arg DISTRO_VERSION=16.04 ../constellation
+	docker build -t $(DOCKER_NS)/constellation-base -f ../constellation/build-ubuntu.dockerfile --build-arg DISTRO_VERSION=18.04 ../constellation
 
 docker-constellation: docker-builder
 	@echo "Building docker image for constellation"
 	# build the "constellation" docker image
 ifneq ($(CONSTELLATION_BASE),latest)
 	@echo "Building docker image for constellation base"
-	docker build -t $(DOCKER_NS)/constellation-base -f ../constellation/build-ubuntu.dockerfile --build-arg DISTRO_VERSION=16.04 ../constellation
+	docker build -t $(DOCKER_NS)/constellation-base -f ../constellation/build-ubuntu.dockerfile --build-arg DISTRO_VERSION=18.04 ../constellation
 else
 	@echo "Docker image for constellation base already exists"
 endif

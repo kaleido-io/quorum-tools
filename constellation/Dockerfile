@@ -2,21 +2,22 @@
 FROM jpmorganchase/constellation-base as builder
 
 # Pull all binaries into a second stage deploy container
-FROM ubuntu:16.04
+FROM ubuntu:18.04
 
-COPY --from=builder /usr/local/src/constellation/ubuntu-16.04.deb /tmp/constellation/
+COPY --from=builder /usr/local/src/constellation/ubuntu-18.04.deb /tmp/constellation/
 
 RUN apt-get update && \
     apt-get install -y \
         lsb-release \
         dpkg-dev \
-        curl
+        curl \
+        gpg-agent
 
-RUN dpkg -i /tmp/constellation/ubuntu-16.04.deb; apt-get -y -f install && \
-    rm /tmp/constellation/ubuntu-16.04.deb
+RUN dpkg -i /tmp/constellation/ubuntu-18.04.deb; apt-get -y -f install && \
+    rm /tmp/constellation/ubuntu-18.04.deb
 
 # Install Node.js and git, as well as dev tools to build binary NPMs
-RUN curl -sL https://deb.nodesource.com/setup_8.x | bash - \
+RUN curl -sL https://deb.nodesource.com/setup_14.x | bash - \
     && apt-get install -y nodejs git make g++ \
     && npm install -g npm \
     && rm -rf /var/lib/apt/lists/*
