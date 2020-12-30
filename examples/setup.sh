@@ -82,8 +82,8 @@ cips=()
 ## the corresponding geth node IP address by subtracting 1
 for i in $(seq 1 $NUMNODES)
 do
-    cips+=("172.13.0.$((0 + i * 2))")
-    ips+=("172.13.0.$((1 + i * 2))")
+    cips+=("172.13.$((0 + i * 2)).1")
+    ips+=("172.13.$((1 + i * 2)).1")
 done
 
 # Docker image name
