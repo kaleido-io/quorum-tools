@@ -9,8 +9,8 @@ This tests the setup to have Quorum (based on go-ethereum) and Constellation to 
 This repository depends on the following repositories to be cloned and reside next to it:
 ```
 git clone git@github.com:kaleido-io/quorum-tools.git
-git clone git@github.com:jimthematrix/quorum.git
-git clone git@github.com:jimthematrix/constellation.git
+git clone git@github.com:kaleido-io/quorum.git
+git clone git@github.com:kaleido-io/constellation.git
 git clone git@github.com:getamis/istanbul-tools.git
 ```
 
