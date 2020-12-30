@@ -16,7 +16,7 @@ RUN apt-get update && \
             zlib1g-dev \
             xz-utils
 
-ENV GOREL go1.7.3.linux-amd64.tar.gz
+ENV GOREL go1.14.13.linux-amd64.tar.gz
 ENV PATH $PATH:/usr/local/go/bin
 
 RUN wget -q https://storage.googleapis.com/golang/$GOREL && \
