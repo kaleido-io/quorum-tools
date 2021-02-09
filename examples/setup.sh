@@ -189,10 +189,12 @@ EOF
   "coinbase": "0x0000000000000000000000000000000000000000",
   "config": {
     "homesteadBlock": 0,
-    "byzantiumBlock": 0,
     "eip150Block": 0,
     "eip155Block": 0,
-    "isQuorum":true,
+    "eip158Block": 0,
+    "byzantiumBlock": 0,
+    "constantinopleBlock": 0,
+    "isQuorum": true,
     "chainId": 3543006677
   },
   "difficulty": "0x0",
