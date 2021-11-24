@@ -55,7 +55,7 @@ fi
 
 GETH_ARGS=`cat /qdata/args.txt`
 echo "[*] Starting node with args $GETH_ARGS"
-export PRIVATE_CONFIG=/qdata/constellation/tm.conf
+export PRIVATE_CONFIG=ignore
 sh -c "geth $GETH_ARGS 2>>/qdata/logs/geth.log" &
 pid=$!
 # Geth wants SIGINT instead of SIGTERM

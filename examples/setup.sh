@@ -12,7 +12,7 @@
 # Run a console on Node N with "geth attach qdata_N/ethereum/geth.ipc"
 # (assumes Geth is installed on the host.)
 #
-# Geth and Constellation logfiles for Node N will be in qdata_N/logs/
+# Quorum logfiles for Node N will be in qdata_N/logs/
 #
 
 # TODO: check file access permissions, especially for keys.
@@ -77,17 +77,12 @@ fi
 # One Docker container will be configured for each IP address in $ips
 subnet="172.13.0.0/16"
 ips=()
-cips=()
-## constellation node uses IP address derived from
-## the corresponding geth node IP address by subtracting 1
 for i in $(seq 1 $NUMNODES)
 do
-    cips+=("172.13.$((0 + i * 2)).1")
     ips+=("172.13.$((1 + i * 2)).1")
 done
 
 # Docker image name
-image_constellation=jpmorganchase/constellation
 image_quorum=jpmorganchase/quorum
 
 cd ../
@@ -119,7 +114,7 @@ do
   k=$((i-1))
   qd=qdata_$i
   ip=${ips[$k]}
-  mkdir -p $qd/{logs,constellation}
+  mkdir -p $qd/logs
   mkdir -p $qd/ethereum/geth
   touch $qd/logs/dummy.txt
 
@@ -158,7 +153,7 @@ do
     # Generate an Ether account for the node
     touch $qd/ethereum/passwords.txt
     create_account="docker run -v $pwd/$qd:/qdata $image_quorum /usr/local/bin/geth --datadir=/qdata/ethereum --password /qdata/ethereum/passwords.txt account new"
-    account1=`$create_account | cut -c 11-50`
+    account1=`$create_account | awk -F'[:]' '{print $2}' | grep 0x | xargs`
     echo "  Accounts for node $i: $account1"
 
     # Add the account to the genesis block so it has some Ether at start-up
@@ -210,38 +205,19 @@ fi
 
 #### Complete each node's configuration ################################
 
-echo '[3] Creating Constellation keys'
-
-#### Make node list for tm.conf ########################################
-
-nodelist=
-for ip in ${cips[*]}
-do
-    sep=`[[ $ip != ${cips[0]} ]] && echo ","`
-    nodelist=${nodelist}${sep}'"http://'${ip}':9000/"'
-done
+echo '[3] Preparing data directories for each node'
 
 for i in $(seq 1 $NUMNODES)
 do
-    qd=qdata_$i
+  qd=qdata_$i
 
-    cat ../templates/tm.conf \
-        | sed s/_NODEIP_/${cips[$((i-1))]}/g \
-        | sed s%_NODELIST_%$nodelist%g \
-              > $qd/constellation/tm.conf
+  cp genesis.json $qd/ethereum/genesis.json
+  cp static-nodes.json $qd/ethereum/static-nodes.json
+  cp static-nodes.json $qd/ethereum/permissioned-nodes.json
 
-    cp genesis.json $qd/ethereum/genesis.json
-    cp static-nodes.json $qd/ethereum/static-nodes.json
-    cp static-nodes.json $qd/ethereum/permissioned-nodes.json
-
-    # Generate Quorum-related keys (used by Constellation)
-    docker run -v $pwd/$qd:/qdata -v $pwd/../scripts:/scripts $image_constellation /scripts/generate-keys.sh
-    echo '  Node '$i' public key: '`cat $qd/constellation/tm.pub`
-
-    let n++
+  let n++
 done
 rm -rf genesis.json static-nodes.json alloc.json ../tmp-ibft
-
 
 #### Create the docker-compose file ####################################
 
@@ -277,16 +253,6 @@ for index in ${!ips[*]}; do
     cip=${cips[index]}; 
 
     cat >> docker-compose.yml <<EOF
-  constellation_$n:
-    container_name: constellation_$n
-    image: $image_constellation
-    volumes:
-      - './$qd:/qdata'
-    networks:
-      quorum_net:
-        ipv4_address: '$cip'
-    ipc: shareable
-
   node_$n:
     container_name: node_$n
     image: $image_quorum
@@ -300,9 +266,7 @@ for index in ${!ips[*]}; do
       - $((n+22000)):8545
       - $((n+23000)):8546 
     depends_on:
-      - constellation_$n
       - bootnode
-    ipc: service:constellation_$n
 
 EOF
 done
