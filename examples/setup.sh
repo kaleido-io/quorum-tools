@@ -190,7 +190,7 @@ EOF
     "byzantiumBlock": 0,
     "constantinopleBlock": 0,
     "isQuorum": true,
-    "chainId": 3543006677
+    "chainId": 2018
   },
   "difficulty": "0x0",
   "mixhash": "0x00000000000000000000000000000000000000647572616c65787365646c6578",
