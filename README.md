@@ -12,6 +12,11 @@ git clone git@github.com:kaleido-io/quorum-tools.git
 git clone -b v21.4.2 git@github.com:kaleido-io/quorum.git
 git clone git@github.com:getamis/istanbul-tools.git
 ```
+NOTE: If you are running this command on an M1 Mac, add `--platform=linux/amd64` to docker build and run commands for `make docker` and `./setup.sh`
+
+```
+example: 	docker build --platform=linux/amd64 -t $(DOCKER_NS)/quorum-builder builder
+```
 
 Build the docker images by launching from the project root:
 ```
@@ -31,6 +36,7 @@ It should produce the following docker images:
 `setup.sh` depends upon [jq](https://stedolan.github.io/jq/).  Please ensure this `jq` is installed
 
 ## Generate configuration artifacts and docker-compose.yml
+
 
 ```
 cd examples
@@ -112,3 +118,38 @@ command: start.sh --bootnode="enode://c3475a286a...6ebc6@172.13.0.100:30301" --i
 ```
 command: start.sh --bootnode="enode://c3475a286a...6ebc6@172.13.0.100:30301" --ibft --blockperiod=5
 ```
+
+## Restore Procedure
+
+This repo contains logic to recreate a blockchain from chain data backups.
+
+Pre-Requisites:
+
+  * Have Environment level Backups enabled.
+
+  * Execute a normal node backup using the `/backup` Kaleido Console API. In order to get the keystore material.
+
+Steps:
+
+ 1. Follow setup instructions regarding downloading repos and run `make docker`.
+ 2. Update the `setup.sh` script to create 1 node `NUMNODES=1`. This procedure is check state of chain, not to recreate a network, then run `setup.sh`. 
+ 3. Run the following commands.
+ ```
+ cd examples/tmp/qdata_1
+ mv ethereum ethereum-old
+ ```
+ 4. Move the `ethereum` directory from node backup taken previously.
+ 5. Inside the `examples/tmp/qdata_1/ethereum` directory (ethereum directory from node backup). Create the restore node marker file.
+ ```
+ touch .restore_mode
+ ```
+ 6. From the `examples` directory run. 
+ ```
+ docker-compose -f tmp/docker-compose.yml up
+```
+7. On start, `boot.js` will see the marker file and start the chain restore process.
+
+
+ 
+
+
