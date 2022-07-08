@@ -20,10 +20,9 @@ logger.level = 'info';
 const fs = require('fs-extra');
 const path = require('path');
 const argv = require('yargs').argv;
-
+const Restore = require('./restore');
 const DATADIR = '/qdata';
 const BOOT_CONFIG = 'boot.config';
-
 const poa = argv.poa;
 const ibft = argv.ibft;
 const raftInit = argv.raftInit;
@@ -32,7 +31,7 @@ const networkID = argv.networkid;
 const bootnode = argv.bootnode;
 const blockPeriod = argv.blockperiod;
 const roundChangeTimer = argv.roundchangetimer;
-
+const restore_config = require('./config');
 const rpcOrigins = argv.rpcOrigins || "*";
 const wsOrigins = argv.wsOrigins || "*";
 const consensus = (poa) ? 'POA' : ((ibft) ? 'IBFT' : 'RAFT');
@@ -40,6 +39,8 @@ const consensus = (poa) ? 'POA' : ((ibft) ? 'IBFT' : 'RAFT');
 class Bootstrapper {
   constructor() {
     this.configfile = path.join(DATADIR, BOOT_CONFIG);
+    this.restoreModeFile = path.join(DATADIR, 'ethereum', '.restore_mode');
+    this.restore = new Restore(restore_config);
   }
 
   async checkDependencies() {
@@ -49,6 +50,15 @@ class Bootstrapper {
       data = await fs.readFile(this.configfile);
     } catch(err) {
       logger.info(`No ${this.configfile} found, will look for required parameters in the command line args`);
+    }
+
+    try {
+      await fs.access(this.restoreModeFile);
+      logger.info(`Successfully found restore mode file, entering restore mode with config ${JSON.stringify(restore_config)}`);
+      await this.restore.downLoadBackupFiles(restore_config);
+      return false;
+    }catch (err) {
+      logger.info(`Restore file not found, continue with start up, error: ${err}`);
     }
 
     if (!data) data = '{}';
