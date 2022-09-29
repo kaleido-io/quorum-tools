@@ -19,24 +19,13 @@ clean: docker-clean
 # Docker builds
 docker-builder:
 	@echo "Building docker image for builder"
-	docker build -t $(DOCKER_NS)/quorum-builder builder
-
-docker-bootnode: docker-builder
-	@echo "Building docker image for bootnode"
-	# build geth and bootnode commands
-	docker run -v $(abspath ../quorum):/work $(DOCKER_NS)/quorum-builder make all
-	# build the "bootnode" docker image
-	docker build -t $(DOCKER_NS)/bootnode -f bootnode/Dockerfile ..
+	docker build --platform linux/amd64 -t $(DOCKER_NS)/quorum-builder builder
 
 docker-geth: docker-builder
 	@echo "Building docker image for geth"
 	# build geth and bootnode commands
 	docker run -v $(abspath ../quorum):/work $(DOCKER_NS)/quorum-builder make all
 	# build the "quorum" docker image
-	docker build -t $(DOCKER_NS)/quorum -f geth/Dockerfile ..
+	docker build --platform linux/amd64 -t $(DOCKER_NS)/quorum -f geth/Dockerfile ..
 
-istanbul-tools:
-	@echo "Building docker image for istanbul-tools"
-	docker build -t istanbul-tools -f istanbul/Dockerfile ..
-
-docker: docker-geth istanbul-tools
+docker: docker-geth

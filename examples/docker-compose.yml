@@ -1,0 +1,80 @@
+version: '2'
+services:
+  bootnode:
+    container_name: bootnode
+    image: jpmorganchase/quorum
+    command: bootnode -nodekey /qdata/nodekey
+    volumes:
+      - './qdata_0:/qdata'
+    networks:
+      quorum_net:
+        ipv4_address: '172.13.0.100'
+
+  node_1:
+    container_name: node_1
+    image: jpmorganchase/quorum
+    command: start.sh --bootnode="enode://973504942e8260307a1442046241e5dfc6a55a3065e3ce25d1a00b40315e127b62ba435237c7133b1d11940f1a8aadfea6c54766f337718b5d78ac26c20f4283@172.13.0.100:30301" --ibft --blockperiod=5 --roundchangetimer=15000 --networkid 2018
+    volumes:
+      - './qdata_1:/qdata'
+    networks:
+      quorum_net:
+        ipv4_address: '172.13.3.1'
+    ports:
+      - 22001:8545
+      - 23001:8546 
+    depends_on:
+      - bootnode
+
+  node_2:
+    container_name: node_2
+    image: jpmorganchase/quorum
+    command: start.sh --bootnode="enode://973504942e8260307a1442046241e5dfc6a55a3065e3ce25d1a00b40315e127b62ba435237c7133b1d11940f1a8aadfea6c54766f337718b5d78ac26c20f4283@172.13.0.100:30301" --ibft --blockperiod=5 --roundchangetimer=15000 --networkid 2018
+    volumes:
+      - './qdata_2:/qdata'
+    networks:
+      quorum_net:
+        ipv4_address: '172.13.5.1'
+    ports:
+      - 22002:8545
+      - 23002:8546 
+    depends_on:
+      - bootnode
+
+  node_3:
+    container_name: node_3
+    image: jpmorganchase/quorum
+    command: start.sh --bootnode="enode://973504942e8260307a1442046241e5dfc6a55a3065e3ce25d1a00b40315e127b62ba435237c7133b1d11940f1a8aadfea6c54766f337718b5d78ac26c20f4283@172.13.0.100:30301" --ibft --blockperiod=5 --roundchangetimer=15000 --networkid 2018
+    volumes:
+      - './qdata_3:/qdata'
+    networks:
+      quorum_net:
+        ipv4_address: '172.13.7.1'
+    ports:
+      - 22003:8545
+      - 23003:8546 
+    depends_on:
+      - bootnode
+
+  node_4:
+    container_name: node_4
+    image: jpmorganchase/quorum
+    command: start.sh --bootnode="enode://973504942e8260307a1442046241e5dfc6a55a3065e3ce25d1a00b40315e127b62ba435237c7133b1d11940f1a8aadfea6c54766f337718b5d78ac26c20f4283@172.13.0.100:30301" --ibft --blockperiod=5 --roundchangetimer=15000 --networkid 2018
+    volumes:
+      - './qdata_4:/qdata'
+    networks:
+      quorum_net:
+        ipv4_address: '172.13.9.1'
+    ports:
+      - 22004:8545
+      - 23004:8546 
+    depends_on:
+      - bootnode
+
+
+networks:
+  quorum_net:
+    driver: bridge
+    ipam:
+      driver: default
+      config:
+      - subnet: 172.13.0.0/16

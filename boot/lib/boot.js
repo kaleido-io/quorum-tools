@@ -33,9 +33,9 @@ const bootnode = argv.bootnode;
 const blockPeriod = argv.blockperiod;
 const roundChangeTimer = argv.roundchangetimer;
 
-const rpcOrigins = argv.rpcOrigins || "*";
-const wsOrigins = argv.wsOrigins || "*";
-const consensus = (poa) ? 'POA' : ((ibft) ? 'IBFT' : 'RAFT');
+const rpcOrigins = argv.rpcOrigins || '*';
+const wsOrigins = argv.wsOrigins || '*';
+const consensus = poa ? 'POA' : ibft ? 'IBFT' : 'RAFT';
 
 class Bootstrapper {
   constructor() {
@@ -47,7 +47,7 @@ class Bootstrapper {
     let data;
     try {
       data = await fs.readFile(this.configfile);
-    } catch(err) {
+    } catch (err) {
       logger.info(`No ${this.configfile} found, will look for required parameters in the command line args`);
     }
 
@@ -66,7 +66,7 @@ class Bootstrapper {
 
     let _config = {
       bootnode: _bootnode,
-      network_id: _networkID
+      network_id: _networkID,
     };
 
     let _raftID = raftID || config.raft_id;
@@ -82,7 +82,7 @@ class Bootstrapper {
 
   async writeCommandLineArgs(config) {
     const COMMON_ARGS = `--datadir ${DATADIR}/ethereum --nodekey /qdata/ethereum/nodekey --targetgaslimit 804247552 --miner.gasprice 0 --txpool.pricelimit 0 --port 30303 --rpc --rpcport 8545 --rpcaddr 0.0.0.0 --ws --wsport 8546 --wsaddr 0.0.0.0 --allow-insecure-unlock --unlock 0 --password /qdata/ethereum/passwords.txt --verbosity 4 --nousb`;
-    const COMMON_APIS = "admin,db,eth,debug,miner,net,shh,txpool,personal,web3";
+    const COMMON_APIS = 'admin,db,eth,debug,miner,net,shh,txpool,personal,web3';
     const RAFT_APIS = `${COMMON_APIS},raft`;
     const IBFT_APIS = `${COMMON_APIS},istanbul`;
     const POA_APIS = `${COMMON_APIS},clique`;
