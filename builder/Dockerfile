@@ -13,7 +13,8 @@ RUN apt-get update && \
             unzip \
             wget \
             zlib1g-dev \
-            xz-utils
+            xz-utils && \
+    git config --global --add safe.directory /work
 
 ENV GOREL go1.14.13.linux-amd64.tar.gz
 ENV PATH $PATH:/usr/local/go/bin
