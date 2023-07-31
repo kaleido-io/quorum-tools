@@ -21,11 +21,10 @@ docker-builder:
 	@echo "Building docker image for builder"
 	docker build --platform linux/amd64 -t $(DOCKER_NS)/quorum-builder builder
 
-docker-geth: docker-builder
-	@echo "Building docker image for geth"
+docker-geth:
 	# build geth and bootnode commands
-	docker run -v $(abspath ../quorum):/work $(DOCKER_NS)/quorum-builder make all
+	docker run --platform linux/amd64 -v $(abspath ../quorum):/work $(DOCKER_NS)/quorum-builder bash -c "make geth bootnode"
 	# build the "quorum" docker image
 	docker build --platform linux/amd64 -t $(DOCKER_NS)/quorum -f geth/Dockerfile ..
 
-docker: docker-geth
+docker: docker-builder docker-geth
