@@ -16,7 +16,7 @@ RUN apt-get update && \
             xz-utils && \
     git config --global --add safe.directory /work
 
-ENV GOREL go1.14.13.linux-amd64.tar.gz
+ENV GOREL go1.19.linux-amd64.tar.gz
 ENV PATH $PATH:/usr/local/go/bin
 
 RUN wget -q https://storage.googleapis.com/golang/$GOREL && \

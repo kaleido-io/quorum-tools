@@ -1,4 +1,4 @@
-// Copyright 2018 Kaleido, a ConsenSys business
+// Copyright 2023 Kaleido, a ConsenSys business
 
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -81,7 +81,7 @@ class Bootstrapper {
   }
 
   async writeCommandLineArgs(config) {
-    const COMMON_ARGS = `--datadir ${DATADIR}/ethereum --nodekey /qdata/ethereum/nodekey --targetgaslimit 804247552 --miner.gasprice 0 --txpool.pricelimit 0 --port 30303 --rpc --rpcport 8545 --rpcaddr 0.0.0.0 --ws --wsport 8546 --wsaddr 0.0.0.0 --allow-insecure-unlock --unlock 0 --password /qdata/ethereum/passwords.txt --verbosity 4 --nousb`;
+    const COMMON_ARGS = `--datadir ${DATADIR}/ethereum --nodekey /qdata/ethereum/nodekey --miner.gaslimit 804247552 --miner.gasprice 0 --txpool.pricelimit 0 --port 30303 --http --http.port 8545 --http.addr 0.0.0.0 --ws --ws.port 8546 --ws.addr 0.0.0.0 --allow-insecure-unlock --unlock 0 --password /qdata/ethereum/passwords.txt --verbosity 4 --nousb`;
     const COMMON_APIS = 'admin,db,eth,debug,miner,net,shh,txpool,personal,web3';
     const RAFT_APIS = `${COMMON_APIS},raft`;
     const IBFT_APIS = `${COMMON_APIS},istanbul`;
@@ -90,25 +90,25 @@ class Bootstrapper {
     let args = `${COMMON_ARGS} --bootnodes ${config.bootnode}`;
 
     if (consensus === 'POA') {
-      args = `${args} --syncmode full --mine --rpcapi ${POA_APIS} --wsapi ${POA_APIS}`;
+      args = `${args} --syncmode full --mine --http.api ${POA_APIS} --ws.api ${POA_APIS}`;
     } else {
       // for Quorum always turn on "permissioned"
       args = `${args} --permissioned`;
 
       if (ibft) {
-        args = `${args} --syncmode full --mine --rpcapi ${IBFT_APIS} --wsapi ${IBFT_APIS}`;
+        args = `${args} --syncmode full --mine --http.api ${IBFT_APIS} --ws.api ${IBFT_APIS}`;
 
         if (blockPeriod) {
           args = `${args} --istanbul.blockperiod ${blockPeriod} --istanbul.requesttimeout ${roundChangeTimer}`;
         }
       } else if (raftInit) {
-        args = `${args} --raft --raftport 50400 --rpcapi ${RAFT_APIS} --wsapi ${RAFT_APIS}`;
+        args = `${args} --raft --raftport 50400 --http.api ${RAFT_APIS} --ws.api ${RAFT_APIS}`;
       } else if (config.raft_id) {
-        args = `${args} --raft --raftport 50400 --rpcapi ${RAFT_APIS} --wsapi ${RAFT_APIS} --raftjoinexisting ${config.raft_id}`;
+        args = `${args} --raft --raftport 50400 --http.api ${RAFT_APIS} --ws.api ${RAFT_APIS} --raftjoinexisting ${config.raft_id}`;
       }
     }
 
-    args = `${args} --rpccorsdomain '${rpcOrigins}' --wsorigins '${wsOrigins}' --rpcvhosts '*' --networkid ${config.network_id}`;
+    args = `${args} --http.corsdomain '${rpcOrigins}' --ws.origins '${wsOrigins}' --http.vhosts '*' --networkid ${config.network_id}`;
     await fs.writeFile(path.join(DATADIR, 'args.txt'), args);
   }
 }

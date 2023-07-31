@@ -9,7 +9,7 @@ This tests the setup to have Quorum (based on go-ethereum), without a private tr
 This repository depends on the following repositories to be cloned and reside next to it:
 
 ```
-git clone -b v21.4.2 git@github.com:kaleido-io/quorum.git
+git clone -b v23.4.0 git@github.com:kaleido-io/quorum.git
 ```
 
 Build the docker images by launching from the project root of `quorum-tools`:
