@@ -81,7 +81,7 @@ class Bootstrapper {
   }
 
   async writeCommandLineArgs(config) {
-    const COMMON_ARGS = `--datadir ${DATADIR}/ethereum --nodekey /qdata/ethereum/nodekey --miner.gaslimit 804247552 --miner.gasprice 0 --txpool.pricelimit 0 --port 30303 --http --http.port 8545 --http.addr 0.0.0.0 --ws --ws.port 8546 --ws.addr 0.0.0.0 --allow-insecure-unlock --unlock 0 --password /qdata/ethereum/passwords.txt --verbosity 4 --nousb`;
+    const COMMON_ARGS = `--datadir ${DATADIR}/ethereum --nodekey /qdata/ethereum/nodekey --miner.gaslimit 804247552 --miner.gasprice 0 --txpool.pricelimit 0 --port 30303 --http --http.port 8545 --http.addr 0.0.0.0 --ws --ws.port 8546 --ws.addr 0.0.0.0 --allow-insecure-unlock --unlock 0 --password /qdata/ethereum/passwords.txt --verbosity 5 --nousb`;
     const COMMON_APIS = 'admin,db,eth,debug,miner,net,shh,txpool,personal,web3';
     const RAFT_APIS = `${COMMON_APIS},raft`;
     const IBFT_APIS = `${COMMON_APIS},istanbul`;

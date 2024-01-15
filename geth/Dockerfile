@@ -1,8 +1,11 @@
-FROM ubuntu:18.04
+FROM ubuntu:22.04
 
 # Install add-apt-repository
-RUN apt-get update && \
-    apt-get install -y --no-install-recommends software-properties-common && \
+RUN apt-get update
+
+RUN apt-get install -y --no-install-recommends gpg-agent
+
+RUN apt-get install -y --no-install-recommends software-properties-common && \
     add-apt-repository ppa:ethereum/ethereum && \
     apt-get update && \
     apt-get install -y --no-install-recommends \
@@ -14,7 +17,7 @@ RUN apt-get update && \
         gpg-agent
 
 # Install Node.js and git, as well as dev tools to build binary NPMs
-RUN curl -sL https://deb.nodesource.com/setup_16.x | bash - \
+RUN curl -sL https://deb.nodesource.com/setup_20.x | bash - \
     && apt-get install -y nodejs git make g++ \
     && npm install -g npm \
     && rm -rf /var/lib/apt/lists/*
